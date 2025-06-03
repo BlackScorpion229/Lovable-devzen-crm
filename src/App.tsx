@@ -6,12 +6,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import ForkliftsPage from "./pages/Forklifts";
+import VendorsPage from "./pages/Vendors";
+import ResourcesPage from "./pages/Resources";
+import JobRequirementsPage from "./pages/JobRequirements";
+import ProcessFlowPage from "./pages/ProcessFlow";
 import ReportsPage from "./pages/Reports";
-import OperatorsPage from "./pages/Operators";
-import OperationsPage from "./pages/Operations";
-import MaintenancePage from "./pages/Maintenance";
-import GasSupplyPage from "./pages/GasSupply";
+import ContactsPage from "./pages/Contacts";
 
 const queryClient = new QueryClient();
 
@@ -23,11 +23,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/forklifts" element={<ForkliftsPage />} />
-          <Route path="/operators" element={<OperatorsPage />} />
-          <Route path="/operations" element={<OperationsPage />} />
-          <Route path="/maintenance" element={<MaintenancePage />} />
-          <Route path="/gas-supply" element={<GasSupplyPage />} />
+          <Route path="/vendors" element={<VendorsPage />} />
+          <Route path="/contacts" element={<ContactsPage />} />
+          <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/job-requirements" element={<JobRequirementsPage />} />
+          <Route path="/process-flow" element={<ProcessFlowPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
