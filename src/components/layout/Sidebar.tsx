@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import { 
   Building2, 
   Users, 
-  Contact, 
   Briefcase, 
   GitBranch, 
   FileText, 
@@ -65,11 +64,6 @@ const Sidebar: React.FC = () => {
       to: "/vendors",
       icon: Building2,
       label: "Vendors"
-    },
-    {
-      to: "/contacts",
-      icon: Contact,
-      label: "Contacts"
     },
     {
       to: "/resources",

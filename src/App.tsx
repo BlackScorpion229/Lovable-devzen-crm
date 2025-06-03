@@ -11,7 +11,6 @@ import ResourcesPage from "./pages/Resources";
 import JobRequirementsPage from "./pages/JobRequirements";
 import ProcessFlowPage from "./pages/ProcessFlow";
 import ReportsPage from "./pages/Reports";
-import ContactsPage from "./pages/Contacts";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +23,6 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/vendors" element={<VendorsPage />} />
-          <Route path="/contacts" element={<ContactsPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/job-requirements" element={<JobRequirementsPage />} />
           <Route path="/process-flow" element={<ProcessFlowPage />} />
