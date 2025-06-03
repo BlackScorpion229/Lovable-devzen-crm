@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
@@ -83,7 +82,7 @@ const Index = () => {
       )}>
         <Navbar 
           title="Dashboard" 
-          subtitle={currentDate}
+          subtitle="DevZen IT Staffing"
         />
         
         <main className="flex-1 px-6 py-6">
