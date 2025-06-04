@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit2, Trash2, Mail, Phone } from 'lucide-react';
+import { Edit2, Trash2, Mail, Phone, FileText } from 'lucide-react';
 import { Resource } from '@/types/resource';
 
 interface ResourceTableProps {
@@ -24,7 +24,13 @@ const ResourceTable: React.FC<ResourceTableProps> = ({ resources, onEdit, onDele
     switch (type) {
       case 'In-house':
         return 'bg-blue-100 text-blue-800';
-      case 'External':
+      case 'In-house-Friends':
+        return 'bg-green-100 text-green-800';
+      case 'External-LinkedIn':
+        return 'bg-blue-100 text-blue-800';
+      case 'External-Email':
+        return 'bg-orange-100 text-orange-800';
+      case 'External-Referral':
         return 'bg-purple-100 text-purple-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -44,23 +50,6 @@ const ResourceTable: React.FC<ResourceTableProps> = ({ resources, onEdit, onDele
     }
   };
 
-  const getSourceColor = (source: string) => {
-    switch (source) {
-      case 'Internal':
-        return 'bg-gray-100 text-gray-800';
-      case 'LinkedIn':
-        return 'bg-blue-100 text-blue-800';
-      case 'Email':
-        return 'bg-orange-100 text-orange-800';
-      case 'Friend':
-        return 'bg-green-100 text-green-800';
-      case 'Referral':
-        return 'bg-purple-100 text-purple-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   return (
     <Table>
       <TableHeader>
@@ -68,11 +57,11 @@ const ResourceTable: React.FC<ResourceTableProps> = ({ resources, onEdit, onDele
           <TableHead>Name</TableHead>
           <TableHead>Tech Stack</TableHead>
           <TableHead>Type</TableHead>
-          <TableHead>Source</TableHead>
           <TableHead>Contact</TableHead>
           <TableHead>Experience</TableHead>
           <TableHead>Availability</TableHead>
           <TableHead>Rate</TableHead>
+          <TableHead>Resume</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -94,11 +83,6 @@ const ResourceTable: React.FC<ResourceTableProps> = ({ resources, onEdit, onDele
             <TableCell>
               <Badge className={getTypeColor(resource.type)}>
                 {resource.type}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <Badge className={getSourceColor(resource.source)}>
-                {resource.source}
               </Badge>
             </TableCell>
             <TableCell>
@@ -127,6 +111,15 @@ const ResourceTable: React.FC<ResourceTableProps> = ({ resources, onEdit, onDele
             </TableCell>
             <TableCell>
               {resource.hourlyRate ? `$${resource.hourlyRate}/hr` : 'N/A'}
+            </TableCell>
+            <TableCell>
+              {resource.resumeFile ? (
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <FileText className="h-4 w-4 text-blue-600" />
+                </Button>
+              ) : (
+                <span className="text-sm text-muted-foreground">No file</span>
+              )}
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">

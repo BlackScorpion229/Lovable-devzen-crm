@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { X, Upload } from 'lucide-react';
 import { Resource, ResourceFormData } from '@/types/resource';
 
 interface ResourceDialogProps {
@@ -38,7 +38,6 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
     name: '',
     techStack: [],
     type: 'In-house',
-    source: 'Internal',
     contact: '',
     phone: '',
     experience: 0,
@@ -48,6 +47,7 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
   });
 
   const [techInput, setTechInput] = useState('');
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (resource) {
@@ -55,7 +55,6 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
         name: resource.name,
         techStack: resource.techStack,
         type: resource.type,
-        source: resource.source,
         contact: resource.contact,
         phone: resource.phone || '',
         experience: resource.experience || 0,
@@ -68,7 +67,6 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
         name: '',
         techStack: [],
         type: 'In-house',
-        source: 'Internal',
         contact: '',
         phone: '',
         experience: 0,
@@ -77,11 +75,12 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
         notes: ''
       });
     }
+    setResumeFile(null);
   }, [resource, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    onSave({ ...formData, resumeFile: resumeFile || undefined });
     onClose();
   };
 
@@ -106,6 +105,18 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
     if (e.key === 'Enter') {
       e.preventDefault();
       addTechStack();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (allowedTypes.includes(file.type)) {
+        setResumeFile(file);
+      } else {
+        alert('Please upload only PDF or Word documents');
+      }
     }
   };
 
@@ -188,35 +199,20 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Type</Label>
-              <Select value={formData.type} onValueChange={(value: 'In-house' | 'External') => setFormData({ ...formData, type: value })}>
+              <Label>Type & Source</Label>
+              <Select value={formData.type} onValueChange={(value: 'In-house' | 'In-house-Friends' | 'External-LinkedIn' | 'External-Email' | 'External-Referral') => setFormData({ ...formData, type: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="In-house">In-house</SelectItem>
-                  <SelectItem value="External">External</SelectItem>
+                  <SelectItem value="In-house-Friends">In-house - Friends</SelectItem>
+                  <SelectItem value="External-LinkedIn">External - LinkedIn</SelectItem>
+                  <SelectItem value="External-Email">External - Email</SelectItem>
+                  <SelectItem value="External-Referral">External - Referral</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Source</Label>
-              <Select value={formData.source} onValueChange={(value: 'Internal' | 'LinkedIn' | 'Email' | 'Friend' | 'Referral') => setFormData({ ...formData, source: value })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Internal">Internal</SelectItem>
-                  <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                  <SelectItem value="Email">Email</SelectItem>
-                  <SelectItem value="Friend">Friend</SelectItem>
-                  <SelectItem value="Referral">Referral</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Availability</Label>
               <Select value={formData.availability} onValueChange={(value: 'Available' | 'Busy' | 'On Project') => setFormData({ ...formData, availability: value })}>
@@ -230,6 +226,9 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="hourlyRate">Hourly Rate ($)</Label>
               <Input
@@ -240,6 +239,28 @@ const ResourceDialog: React.FC<ResourceDialogProps> = ({
                 value={formData.hourlyRate}
                 onChange={(e) => setFormData({ ...formData, hourlyRate: parseFloat(e.target.value) || 0 })}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="resume">Resume Upload</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="resume"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('resume')?.click()}
+                  className="flex items-center gap-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  {resumeFile ? resumeFile.name : 'Upload Resume'}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">PDF or Word documents only</p>
             </div>
           </div>
 

@@ -1,0 +1,180 @@
+
+import React, { useState } from 'react';
+import Navbar from '@/components/layout/Navbar';
+import Sidebar from '@/components/layout/Sidebar';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar } from '@/components/ui/calendar';
+import { Badge } from '@/components/ui/badge';
+import { CalendarDays, Phone, Video, MessageSquare, Clock } from 'lucide-react';
+
+const CalendarPage: React.FC = () => {
+  const isMobile = useIsMobile();
+  const [date, setDate] = useState<Date | undefined>(new Date());
+
+  const upcomingActivities = [
+    {
+      id: '1',
+      title: 'Screening Call - John Doe',
+      type: 'Screening Call',
+      time: '10:00 AM',
+      date: '2024-06-05',
+      status: 'Scheduled',
+      color: 'bg-blue-100 text-blue-800',
+      icon: Phone
+    },
+    {
+      id: '2',
+      title: 'Client Interview - Jane Smith',
+      type: 'Client Call',
+      time: '2:00 PM',
+      date: '2024-06-05',
+      status: 'In Progress',
+      color: 'bg-green-100 text-green-800',
+      icon: Video
+    },
+    {
+      id: '3',
+      title: 'Technical Round - Mike Johnson',
+      type: 'Technical Interview',
+      time: '11:00 AM',
+      date: '2024-06-06',
+      status: 'Pending',
+      color: 'bg-yellow-100 text-yellow-800',
+      icon: MessageSquare
+    },
+    {
+      id: '4',
+      title: 'Follow-up Call - Sarah Wilson',
+      type: 'Follow-up',
+      time: '3:30 PM',
+      date: '2024-06-06',
+      status: 'Confirmed',
+      color: 'bg-purple-100 text-purple-800',
+      icon: Phone
+    }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Scheduled':
+        return 'bg-blue-100 text-blue-800';
+      case 'In Progress':
+        return 'bg-green-100 text-green-800';
+      case 'Pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Confirmed':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-background">
+      <Sidebar />
+      
+      <div className={cn(
+        "flex-1 flex flex-col",
+        !isMobile && "ml-64"
+      )}>
+        <Navbar 
+          title="Calendar" 
+          subtitle="Schedule and track job requirement activities"
+        />
+        
+        <main className="flex-1 px-6 py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <CalendarDays className="w-8 h-8 text-primary" />
+              <div>
+                <h1 className="text-3xl font-bold">Calendar</h1>
+                <p className="text-muted-foreground">Track job requirement workflows and activities</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-1">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Calendar View</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    className="rounded-md border"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="md:col-span-2">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="w-5 h-5" />
+                    Upcoming Activities
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {upcomingActivities.map((activity) => (
+                      <div key={activity.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex gap-3">
+                            <div className="p-2 bg-primary/10 text-primary rounded-md">
+                              <activity.icon className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-medium">{activity.title}</h3>
+                              <p className="text-sm text-muted-foreground">{activity.type}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className="text-sm font-medium">{activity.date}</span>
+                                <span className="text-sm text-muted-foreground">{activity.time}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <Badge className={getStatusColor(activity.status)}>
+                            {activity.status}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-8 p-4 bg-muted/50 rounded-lg">
+                    <h4 className="font-medium mb-2">Status Legend</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span className="text-sm">Scheduled</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span className="text-sm">In Progress</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <span className="text-sm">Pending</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                        <span className="text-sm">Confirmed</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default CalendarPage;

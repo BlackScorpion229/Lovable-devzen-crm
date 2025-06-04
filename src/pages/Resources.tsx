@@ -21,21 +21,20 @@ const ResourcesPage = () => {
       name: 'Alice Johnson',
       techStack: ['Java', 'Spring Boot'],
       type: 'In-house',
-      source: 'Internal',
       contact: 'alice.johnson@company.com',
       phone: '+1-555-0101',
       experience: 5,
       availability: 'Available',
       hourlyRate: 75,
       createdAt: '2024-01-15',
-      notes: 'Senior developer with microservices experience'
+      notes: 'Senior developer with microservices experience',
+      resumeFile: 'alice_resume.pdf'
     },
     {
       id: '2',
       name: 'Bob Martin',
       techStack: ['Python', 'Django'],
-      type: 'In-house',
-      source: 'Internal',
+      type: 'In-house-Friends',
       contact: 'bob.martin@company.com',
       phone: '+1-555-0102',
       experience: 7,
@@ -48,9 +47,8 @@ const ResourcesPage = () => {
       id: '3',
       name: 'Charlie Davis',
       techStack: ['JavaScript', 'React'],
-      type: 'In-house',
-      source: 'Internal',
-      contact: 'charlie.davis@company.com',
+      type: 'External-LinkedIn',
+      contact: 'charlie.davis@example.com',
       phone: '+1-555-0103',
       experience: 4,
       availability: 'Available',
@@ -62,9 +60,8 @@ const ResourcesPage = () => {
       id: '4',
       name: 'Diana Evans',
       techStack: ['DevOps', 'AWS'],
-      type: 'In-house',
-      source: 'Internal',
-      contact: 'diana.evans@company.com',
+      type: 'External-Email',
+      contact: 'diana.evans@example.com',
       phone: '+1-555-0104',
       experience: 6,
       availability: 'Busy',
@@ -76,29 +73,14 @@ const ResourcesPage = () => {
       id: '5',
       name: 'Ethan Wilson',
       techStack: ['Data Science', 'Python'],
-      type: 'In-house',
-      source: 'Internal',
-      contact: 'ethan.wilson@company.com',
+      type: 'External-Referral',
+      contact: 'ethan.wilson@example.com',
       phone: '+1-555-0105',
       experience: 3,
       availability: 'Available',
       hourlyRate: 80,
       createdAt: '2024-01-20',
       notes: 'Data scientist with machine learning background'
-    },
-    {
-      id: '6',
-      name: 'Fiona Clark',
-      techStack: ['Java', 'Microservices'],
-      type: 'External',
-      source: 'LinkedIn',
-      contact: 'fiona.clark@example.com',
-      phone: '+1-555-0106',
-      experience: 8,
-      availability: 'Available',
-      hourlyRate: 95,
-      createdAt: '2024-01-25',
-      notes: 'Senior architect with enterprise experience'
     }
   ]);
 
@@ -134,7 +116,7 @@ const ResourcesPage = () => {
     if (editingResource) {
       setResources(resources.map(r => 
         r.id === editingResource.id 
-          ? { ...r, ...resourceData }
+          ? { ...r, ...resourceData, resumeFile: resourceData.resumeFile?.name }
           : r
       ));
       toast({
@@ -145,6 +127,7 @@ const ResourcesPage = () => {
       const newResource: Resource = {
         id: Date.now().toString(),
         ...resourceData,
+        resumeFile: resourceData.resumeFile?.name,
         createdAt: new Date().toISOString().split('T')[0]
       };
       setResources([...resources, newResource]);

@@ -81,9 +81,9 @@ const Sidebar: React.FC = () => {
       label: "Process Flow"
     },
     {
-      to: "/reports",
+      to: "/calendar",
       icon: FileText,
-      label: "Reports"
+      label: "Calendar"
     }
   ];
 
