@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
@@ -25,12 +24,12 @@ const ProcessFlowPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingFlow, setEditingFlow] = useState<ProcessFlowItem | undefined>();
   
-  // Sample data
+  // Sample data with job IDs
   const [processFlows, setProcessFlows] = useState<ProcessFlowItem[]>([
     {
       id: '1',
-      jobRequirementId: 'JR001',
-      jobTitle: 'Senior React Developer',
+      jobRequirementId: 'DZ-DS-0001',
+      jobTitle: 'Senior Data Scientist',
       candidateName: 'John Smith',
       currentStage: 'Client Interview',
       startDate: '2024-01-15',
@@ -42,7 +41,7 @@ const ProcessFlowPage = () => {
     },
     {
       id: '2',
-      jobRequirementId: 'JR002',
+      jobRequirementId: 'DZ-DO-0001',
       jobTitle: 'DevOps Engineer',
       candidateName: 'Sarah Johnson',
       currentStage: 'Technical Assessment',
@@ -55,8 +54,8 @@ const ProcessFlowPage = () => {
     },
     {
       id: '3',
-      jobRequirementId: 'JR003',
-      jobTitle: 'Full Stack Developer',
+      jobRequirementId: 'DZ-DE-0001',
+      jobTitle: 'Data Engineering Lead',
       candidateName: 'Mike Wilson',
       currentStage: 'Offer Discussion',
       startDate: '2024-01-10',
@@ -103,6 +102,7 @@ const ProcessFlowPage = () => {
   const filteredFlows = processFlows.filter(flow => {
     const matchesSearch = flow.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          flow.candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         flow.jobRequirementId.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          flow.currentStage.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'All' || flow.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -177,7 +177,7 @@ const ProcessFlowPage = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Search by job title, candidate, or stage..."
+                placeholder="Search by job title, candidate, job ID, or stage..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"

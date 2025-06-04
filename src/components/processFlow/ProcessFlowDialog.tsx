@@ -39,8 +39,8 @@ const ProcessFlowDialog: React.FC<ProcessFlowDialogProps> = ({
     currentStage: '',
     startDate: '',
     expectedCompletionDate: '',
-    status: 'Active' as const,
-    priority: 'Medium' as const,
+    status: 'Active' as 'Active' | 'Completed' | 'OnHold' | 'Cancelled',
+    priority: 'Medium' as 'Low' | 'Medium' | 'High' | 'Urgent',
     notes: ''
   });
 
@@ -142,7 +142,7 @@ const ProcessFlowDialog: React.FC<ProcessFlowDialogProps> = ({
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value: any) => setFormData({ ...formData, status: value })}
+                onValueChange={(value: 'Active' | 'Completed' | 'OnHold' | 'Cancelled') => setFormData({ ...formData, status: value })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -162,7 +162,7 @@ const ProcessFlowDialog: React.FC<ProcessFlowDialogProps> = ({
               <Label htmlFor="priority">Priority</Label>
               <Select
                 value={formData.priority}
-                onValueChange={(value: any) => setFormData({ ...formData, priority: value })}
+                onValueChange={(value: 'Low' | 'Medium' | 'High' | 'Urgent') => setFormData({ ...formData, priority: value })}
               >
                 <SelectTrigger>
                   <SelectValue />

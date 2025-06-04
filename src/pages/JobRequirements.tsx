@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Sidebar from '@/components/layout/Sidebar';
@@ -12,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import JobRequirementTable from '@/components/jobRequirement/JobRequirementTable';
 import JobRequirementDialog from '@/components/jobRequirement/JobRequirementDialog';
-import { JobRequirement, JobRequirementFormData } from '@/types/jobRequirement';
+import { JobRequirement, JobRequirementFormData, generateJobId } from '@/types/jobRequirement';
 
 const JobRequirementsPage = () => {
   const isMobile = useIsMobile();
@@ -22,15 +21,16 @@ const JobRequirementsPage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
 
-  // Sample data
+  // Sample data with job IDs
   const [jobRequirements, setJobRequirements] = useState<JobRequirement[]>([
     {
       id: '1',
-      title: 'Senior React Developer',
+      jobId: 'DZ-DS-0001',
+      title: 'Senior Data Scientist',
       client: 'TechCorp Inc.',
       vendor: 'Vertex Solutions',
-      description: 'Looking for an experienced React developer to join our frontend team.',
-      techStack: ['React', 'TypeScript', 'Node.js', 'GraphQL'],
+      description: 'Looking for an experienced data scientist to join our AI team.',
+      techStack: ['Python', 'TensorFlow', 'SQL', 'AWS'],
       experience: 5,
       location: 'New York, NY',
       salary: { min: 120, max: 150, currency: 'USD' },
@@ -43,6 +43,7 @@ const JobRequirementsPage = () => {
     },
     {
       id: '2',
+      jobId: 'DZ-DO-0001',
       title: 'DevOps Engineer',
       client: 'StartupXYZ',
       description: 'DevOps engineer needed for cloud infrastructure management.',
@@ -58,11 +59,12 @@ const JobRequirementsPage = () => {
     },
     {
       id: '3',
-      title: 'Full Stack Developer',
+      jobId: 'DZ-DE-0001',
+      title: 'Data Engineering Lead',
       client: 'Enterprise Solutions',
       vendor: 'Tech Recruiters Pro',
-      description: 'Full stack developer for enterprise web applications.',
-      techStack: ['Java', 'Spring Boot', 'Angular', 'PostgreSQL'],
+      description: 'Data engineering lead for building scalable data pipelines.',
+      techStack: ['Apache Spark', 'Kafka', 'Python', 'PostgreSQL'],
       experience: 4,
       location: 'Austin, TX',
       status: 'OnHold',
@@ -83,6 +85,7 @@ const JobRequirementsPage = () => {
   const filteredJobRequirements = jobRequirements.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         job.jobId.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.techStack.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesStatus = statusFilter === 'all' || job.status === statusFilter;
@@ -113,8 +116,10 @@ const JobRequirementsPage = () => {
           : job
       ));
     } else {
+      const jobId = generateJobId(data.title, jobRequirements);
       const newJobRequirement: JobRequirement = {
         id: Date.now().toString(),
+        jobId,
         ...data,
         createdAt: new Date().toISOString().split('T')[0]
       };
@@ -209,7 +214,7 @@ const JobRequirementsPage = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Search by title, client, or tech stack..."
+                placeholder="Search by title, client, job ID, or tech stack..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"

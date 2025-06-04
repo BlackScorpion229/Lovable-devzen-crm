@@ -58,6 +58,7 @@ const ProcessFlowTable: React.FC<ProcessFlowTableProps> = ({
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>Job ID</TableHead>
           <TableHead>Job Title</TableHead>
           <TableHead>Candidate</TableHead>
           <TableHead>Current Stage</TableHead>
@@ -71,6 +72,9 @@ const ProcessFlowTable: React.FC<ProcessFlowTableProps> = ({
       <TableBody>
         {processFlows.map((flow) => (
           <TableRow key={flow.id}>
+            <TableCell>
+              <div className="font-mono text-sm font-medium text-primary">{flow.jobRequirementId}</div>
+            </TableCell>
             <TableCell>
               <div className="font-medium">{flow.jobTitle}</div>
             </TableCell>

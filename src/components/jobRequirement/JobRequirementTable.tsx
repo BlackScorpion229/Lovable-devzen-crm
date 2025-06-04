@@ -58,6 +58,7 @@ const JobRequirementTable: React.FC<JobRequirementTableProps> = ({
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>Job ID</TableHead>
           <TableHead>Job Title</TableHead>
           <TableHead>Client</TableHead>
           <TableHead>Tech Stack</TableHead>
@@ -73,6 +74,9 @@ const JobRequirementTable: React.FC<JobRequirementTableProps> = ({
       <TableBody>
         {jobRequirements.map((job) => (
           <TableRow key={job.id}>
+            <TableCell>
+              <div className="font-mono text-sm font-medium text-primary">{job.jobId}</div>
+            </TableCell>
             <TableCell>
               <div>
                 <div className="font-medium">{job.title}</div>
