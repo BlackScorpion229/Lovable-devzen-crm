@@ -8,12 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { CalendarDays, Phone, Video, MessageSquare, Clock } from 'lucide-react';
+import { format } from 'date-fns';
 
 const CalendarPage: React.FC = () => {
   const isMobile = useIsMobile();
   const [date, setDate] = useState<Date | undefined>(new Date());
 
-  const upcomingActivities = [
+  const allActivities = [
     {
       id: '1',
       title: 'Screening Call - John Doe',
@@ -53,8 +54,36 @@ const CalendarPage: React.FC = () => {
       status: 'Confirmed',
       color: 'bg-purple-100 text-purple-800',
       icon: Phone
+    },
+    {
+      id: '5',
+      title: 'Final Interview - Alex Brown',
+      type: 'Final Round',
+      time: '9:00 AM',
+      date: format(new Date(), 'yyyy-MM-dd'),
+      status: 'Scheduled',
+      color: 'bg-blue-100 text-blue-800',
+      icon: Video
+    },
+    {
+      id: '6',
+      title: 'Reference Check - Lisa Davis',
+      type: 'Reference Call',
+      time: '4:00 PM',
+      date: format(new Date(), 'yyyy-MM-dd'),
+      status: 'Pending',
+      color: 'bg-yellow-100 text-yellow-800',
+      icon: Phone
     }
   ];
+
+  const upcomingActivities = allActivities.filter(activity => 
+    new Date(activity.date) >= new Date()
+  ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  const selectedDateActivities = date ? allActivities.filter(activity => 
+    activity.date === format(date, 'yyyy-MM-dd')
+  ) : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -95,8 +124,8 @@ const CalendarPage: React.FC = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
                   <CardTitle>Calendar View</CardTitle>
@@ -110,10 +139,81 @@ const CalendarPage: React.FC = () => {
                   />
                 </CardContent>
               </Card>
+
+              {/* Status Legend */}
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle className="text-lg">Status Legend</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm">Scheduled</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">In Progress</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <span className="text-sm">Pending</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="text-sm">Confirmed</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
             
-            <div className="md:col-span-2">
-              <Card className="h-full">
+            <div className="lg:col-span-2 space-y-6">
+              {/* Selected Date Activities */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CalendarDays className="w-5 h-5" />
+                    Activities for {date ? format(date, 'EEEE, MMMM d, yyyy') : 'Selected Date'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedDateActivities.length > 0 ? (
+                    <div className="space-y-4">
+                      {selectedDateActivities.map((activity) => (
+                        <div key={activity.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex gap-3">
+                              <div className="p-2 bg-primary/10 text-primary rounded-md">
+                                <activity.icon className="w-4 h-4" />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-medium">{activity.title}</h3>
+                                <p className="text-sm text-muted-foreground">{activity.type}</p>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Clock className="w-3 h-3 text-muted-foreground" />
+                                  <span className="text-sm font-medium">{activity.time}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <Badge className={getStatusColor(activity.status)}>
+                              {activity.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <CalendarDays className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-muted-foreground">No activities scheduled for this date</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Upcoming Activities */}
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Clock className="w-5 h-5" />
@@ -122,7 +222,7 @@ const CalendarPage: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {upcomingActivities.map((activity) => (
+                    {upcomingActivities.slice(0, 5).map((activity) => (
                       <div key={activity.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex gap-3">
@@ -144,28 +244,6 @@ const CalendarPage: React.FC = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                  
-                  <div className="mt-8 p-4 bg-muted/50 rounded-lg">
-                    <h4 className="font-medium mb-2">Status Legend</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                        <span className="text-sm">Scheduled</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-sm">In Progress</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <span className="text-sm">Pending</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                        <span className="text-sm">Confirmed</span>
-                      </div>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
