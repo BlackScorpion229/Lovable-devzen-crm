@@ -45,7 +45,7 @@ const StatusCard: React.FC<StatusCardProps> = ({
               {change.trend === 'up' && <TrendingUp className="w-3 h-3 mr-1" />}
               {change.trend === 'down' && <TrendingDown className="w-3 h-3 mr-1" />}
               {change.trend === 'neutral' && <Minus className="w-3 h-3 mr-1" />}
-              {change.value}% {change.trend === 'up' ? 'aumento' : change.trend === 'down' ? 'redução' : ''}
+              {change.value}% {change.trend === 'up' ? 'increase' : change.trend === 'down' ? 'decrease' : ''}
             </div>
           )}
         </div>

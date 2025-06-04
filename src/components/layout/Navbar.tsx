@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { Bell, Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import Badge from '@/components/common/Badge';
 import {
   Command,
@@ -40,14 +41,17 @@ const Navbar: React.FC<NavbarProps> = ({ title, subtitle }) => {
     vendors: [
       { id: '1', name: 'TechCorp Solutions', email: 'contact@techcorp.com' },
       { id: '2', name: 'InnovateTech', email: 'info@innovatetech.com' },
+      { id: '3', name: 'CloudTech Inc', email: 'hello@cloudtech.com' },
     ],
     resources: [
       { id: '1', name: 'John Smith', techStack: ['React', 'Node.js'], type: 'InHouse' },
       { id: '2', name: 'Sarah Johnson', techStack: ['Python', 'AWS'], type: 'External-LinkedIn' },
+      { id: '3', name: 'Mike Wilson', techStack: ['DevOps', 'Docker'], type: 'InHouse' },
     ],
     jobRequirements: [
-      { id: '1', title: 'Senior React Developer', client: 'ABC Corp', status: 'Active' },
-      { id: '2', title: 'DevOps Engineer', client: 'XYZ Ltd', status: 'Closed' },
+      { id: '1', jobId: 'DZ-DS-0001', title: 'Senior Data Scientist', client: 'ABC Corp', status: 'Active' },
+      { id: '2', jobId: 'DZ-DE-0001', title: 'Data Engineer', client: 'XYZ Ltd', status: 'Closed' },
+      { id: '3', jobId: 'DZ-AI-0001', title: 'AI/ML Engineer', client: 'TechFlow', status: 'Active' },
     ]
   };
 
@@ -86,10 +90,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, subtitle }) => {
       // Search job requirements
       mockData.jobRequirements.forEach(job => {
         if (job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            job.client.toLowerCase().includes(searchQuery.toLowerCase())) {
+            job.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            job.jobId.toLowerCase().includes(searchQuery.toLowerCase())) {
           results.push({
             id: job.id,
-            title: job.title,
+            title: `${job.jobId} - ${job.title}`,
             subtitle: `${job.client} - ${job.status}`,
             type: 'job-requirement',
             url: '/job-requirements'
@@ -129,11 +134,21 @@ const Navbar: React.FC<NavbarProps> = ({ title, subtitle }) => {
     }
   };
 
+  const handleResultSelect = (result: SearchResult) => {
+    // Navigate to the URL
+    window.location.href = result.url;
+    setOpen(false);
+    setSearchQuery('');
+  };
+
   return (
     <header className="w-full py-4 px-6 flex items-center justify-between bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-10">
-      <div>
-        <h1 className="text-2xl font-bold">{title}</h1>
-        {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+      <div className="flex items-center gap-4">
+        <SidebarTrigger />
+        <div>
+          <h1 className="text-2xl font-bold">{title}</h1>
+          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+        </div>
       </div>
       
       <div className="flex items-center gap-4">
@@ -141,7 +156,10 @@ const Navbar: React.FC<NavbarProps> = ({ title, subtitle }) => {
         <div className="relative hidden md:block">
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <div className="relative">
+              <div 
+                className="relative cursor-pointer"
+                onClick={() => setOpen(true)}
+              >
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <input 
                   type="text" 
@@ -155,28 +173,32 @@ const Navbar: React.FC<NavbarProps> = ({ title, subtitle }) => {
             </PopoverTrigger>
             <PopoverContent className="w-80 p-0" align="end">
               <Command>
+                <CommandInput 
+                  placeholder="Search..." 
+                  value={searchQuery}
+                  onValueChange={setSearchQuery}
+                />
                 <CommandList>
                   {searchResults.length === 0 && searchQuery.length > 1 && (
                     <CommandEmpty>No results found.</CommandEmpty>
+                  )}
+                  {searchQuery.length <= 1 && (
+                    <CommandEmpty>Type to search...</CommandEmpty>
                   )}
                   {searchResults.length > 0 && (
                     <CommandGroup heading="Search Results">
                       {searchResults.map((result) => (
                         <CommandItem
                           key={`${result.type}-${result.id}`}
-                          onSelect={() => {
-                            window.location.href = result.url;
-                            setOpen(false);
-                            setSearchQuery('');
-                          }}
+                          onSelect={() => handleResultSelect(result)}
                           className="flex items-center gap-3 cursor-pointer"
                         >
                           <span className="text-lg">{getTypeIcon(result.type)}</span>
-                          <div className="flex-1">
-                            <div className="font-medium">{result.title}</div>
-                            <div className="text-sm text-muted-foreground">{result.subtitle}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{result.title}</div>
+                            <div className="text-sm text-muted-foreground truncate">{result.subtitle}</div>
                           </div>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs shrink-0">
                             {getTypeLabel(result.type)}
                           </Badge>
                         </CommandItem>

@@ -31,29 +31,29 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   return (
     <section className="space-y-6">
       <div className="slide-enter" style={{ animationDelay: '0.1s' }}>
-        <h2 className="text-2xl font-semibold mb-4">Status da Frota</h2>
+        <h2 className="text-2xl font-semibold mb-4">Fleet Status</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatusCard 
-            title="Total de Empilhadeiras" 
+            title="Total Forklifts" 
             value={stats.totalForklifts} 
             icon={Truck} 
             status="info" 
           />
           <StatusCard 
-            title="Em Operação" 
+            title="In Operation" 
             value={stats.operationalForklifts} 
             icon={CheckCircle} 
             status="success"
             change={{ value: 12, trend: 'up' }}
           />
           <StatusCard 
-            title="Em Manutenção" 
+            title="Under Maintenance" 
             value={stats.maintenanceForklifts} 
             icon={Settings} 
             status="warning" 
           />
           <StatusCard 
-            title="Paradas" 
+            title="Stopped" 
             value={stats.stoppedForklifts} 
             icon={Clock} 
             status="neutral" 
@@ -62,28 +62,28 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
       </div>
 
       <div className="slide-enter" style={{ animationDelay: '0.2s' }}>
-        <h2 className="text-2xl font-semibold mb-4">Status dos Operadores</h2>
+        <h2 className="text-2xl font-semibold mb-4">Operator Status</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatusCard 
-            title="Total de Operadores" 
+            title="Total Operators" 
             value={stats.totalOperators} 
             icon={Users} 
             status="info" 
           />
           <StatusCard 
-            title="ASO e NR Regulares" 
+            title="Valid Certificates" 
             value={stats.operatorsWithValidCertificates} 
             icon={CheckCircle} 
             status="success" 
           />
           <StatusCard 
-            title="Próximo do Vencimento" 
+            title="Expiring Soon" 
             value={stats.operatorsWithWarningCertificates} 
             icon={AlertTriangle} 
             status="warning" 
           />
           <StatusCard 
-            title="ASO/NR Vencidos" 
+            title="Expired Certificates" 
             value={stats.operatorsWithExpiredCertificates} 
             icon={AlertTriangle} 
             status="danger" 
@@ -92,29 +92,29 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
       </div>
 
       <div className="slide-enter" style={{ animationDelay: '0.3s' }}>
-        <h2 className="text-2xl font-semibold mb-4">Operação Atual</h2>
+        <h2 className="text-2xl font-semibold mb-4">Current Operations</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatusCard 
-            title="Operações Ativas" 
+            title="Active Operations" 
             value={stats.activeOperations} 
             icon={Truck} 
             status="success"
             change={{ value: 5, trend: 'up' }}
           />
           <StatusCard 
-            title="Manutenções Pendentes" 
+            title="Pending Maintenance" 
             value={stats.pendingMaintenances} 
             icon={Settings} 
             status="warning" 
           />
           <StatusCard 
-            title="Abastecimentos Hoje" 
+            title="Refueling Today" 
             value={3} 
             icon={Fuel} 
             status="info" 
           />
           <StatusCard 
-            title="ASOs a Vencer (30d)" 
+            title="Certificates Due (30d)" 
             value={4} 
             icon={Calendar} 
             status="warning" 
