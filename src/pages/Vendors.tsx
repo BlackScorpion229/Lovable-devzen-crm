@@ -1,9 +1,5 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Sidebar from '@/components/layout/Sidebar';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
 import { Building2, Plus, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,7 +69,6 @@ const mockVendors: Vendor[] = [
 ];
 
 const VendorsPage = () => {
-  const isMobile = useIsMobile();
   const [vendors, setVendors] = useState<Vendor[]>(mockVendors);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -113,60 +108,53 @@ const VendorsPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
+    <div className="flex-1 flex flex-col">
+      <Navbar 
+        title="Vendor Management" 
+        subtitle="Manage your IT staffing vendors and their contacts"
+      />
       
-      <div className={cn(
-        "flex-1 flex flex-col",
-        !isMobile && "ml-64"
-      )}>
-        <Navbar 
-          title="Vendor Management" 
-          subtitle="Manage your IT staffing vendors and their contacts"
-        />
-        
-        <main className="flex-1 px-6 py-6">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <Building2 className="w-8 h-8 text-primary" />
-              <div>
-                <h1 className="text-3xl font-bold">Vendors</h1>
-                <p className="text-muted-foreground">Manage vendors and their contacts</p>
-              </div>
+      <main className="flex-1 px-6 py-6">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <Building2 className="w-8 h-8 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold">Vendors</h1>
+              <p className="text-muted-foreground">Manage vendors and their contacts</p>
             </div>
-            <Button onClick={handleAddVendor} className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Vendor
-            </Button>
+          </div>
+          <Button onClick={handleAddVendor} className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Add Vendor
+          </Button>
+        </div>
+
+        <div className="bg-card rounded-lg border">
+          <div className="p-6 border-b">
+            <div className="flex gap-4 items-center">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Search vendors, contacts, or emails..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                Filter
+              </Button>
+            </div>
           </div>
 
-          <div className="bg-card rounded-lg border">
-            <div className="p-6 border-b">
-              <div className="flex gap-4 items-center">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                  <Input
-                    placeholder="Search vendors, contacts, or emails..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filter
-                </Button>
-              </div>
-            </div>
-
-            <VendorTable 
-              vendors={filteredVendors}
-              onEdit={handleEditVendor}
-              onDelete={handleDeleteVendor}
-            />
-          </div>
-        </main>
-      </div>
+          <VendorTable 
+            vendors={filteredVendors}
+            onEdit={handleEditVendor}
+            onDelete={handleDeleteVendor}
+          />
+        </div>
+      </main>
 
       <VendorDialog
         open={isDialogOpen}

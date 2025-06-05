@@ -1,11 +1,7 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Sidebar from '@/components/layout/Sidebar';
 import ResourceTable from '@/components/resource/ResourceTable';
 import ResourceDialog from '@/components/resource/ResourceDialog';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
 import { Users, Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,8 +9,8 @@ import { Resource, ResourceFormData } from '@/types/resource';
 import { useToast } from '@/hooks/use-toast';
 
 const ResourcesPage = () => {
-  const isMobile = useIsMobile();
   const { toast } = useToast();
+  
   const [resources, setResources] = useState<Resource[]>([
     {
       id: '1',
@@ -140,61 +136,54 @@ const ResourcesPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
+    <div className="flex-1 flex flex-col">
+      <Navbar 
+        title="Resource Management" 
+        subtitle="Manage in-house and external IT resources"
+      />
       
-      <div className={cn(
-        "flex-1 flex flex-col",
-        !isMobile && "ml-64"
-      )}>
-        <Navbar 
-          title="Resource Management" 
-          subtitle="Manage in-house and external IT resources"
-        />
-        
-        <main className="flex-1 px-6 py-6">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <Users className="w-8 h-8 text-primary" />
-              <div>
-                <h1 className="text-3xl font-bold">Resources</h1>
-                <p className="text-muted-foreground">Manage your talent pool and skill sets</p>
-              </div>
-            </div>
-            <Button onClick={handleAddResource} className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Resource
-            </Button>
-          </div>
-
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search resources by name, tech stack, or contact..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+      <main className="flex-1 px-6 py-6">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <Users className="w-8 h-8 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold">Resources</h1>
+              <p className="text-muted-foreground">Manage your talent pool and skill sets</p>
             </div>
           </div>
+          <Button onClick={handleAddResource} className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Add Resource
+          </Button>
+        </div>
 
-          <div className="bg-card rounded-lg border">
-            <ResourceTable
-              resources={filteredResources}
-              onEdit={handleEditResource}
-              onDelete={handleDeleteResource}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder="Search resources by name, tech stack, or contact..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
             />
           </div>
+        </div>
 
-          <ResourceDialog
-            isOpen={isDialogOpen}
-            onClose={() => setIsDialogOpen(false)}
-            onSave={handleSaveResource}
-            resource={editingResource}
+        <div className="bg-card rounded-lg border">
+          <ResourceTable
+            resources={filteredResources}
+            onEdit={handleEditResource}
+            onDelete={handleDeleteResource}
           />
-        </main>
-      </div>
+        </div>
+
+        <ResourceDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          onSave={handleSaveResource}
+          resource={editingResource}
+        />
+      </main>
     </div>
   );
 };

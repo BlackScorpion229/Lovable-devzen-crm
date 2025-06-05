@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Sidebar from '@/components/layout/Sidebar';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
 import { Briefcase, Plus, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +11,6 @@ import JobRequirementDialog from '@/components/jobRequirement/JobRequirementDial
 import { JobRequirement, JobRequirementFormData, generateJobId } from '@/types/jobRequirement';
 
 const JobRequirementsPage = () => {
-  const isMobile = useIsMobile();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingJobRequirement, setEditingJobRequirement] = useState<JobRequirement | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -138,134 +134,127 @@ const JobRequirementsPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
+    <div className="flex-1 flex flex-col">
+      <Navbar 
+        title="Job Requirements" 
+        subtitle="Manage job postings and requirements from vendors"
+      />
       
-      <div className={cn(
-        "flex-1 flex flex-col",
-        !isMobile && "ml-64"
-      )}>
-        <Navbar 
-          title="Job Requirements" 
-          subtitle="Manage job postings and requirements from vendors"
-        />
-        
-        <main className="flex-1 px-6 py-6">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <Briefcase className="w-8 h-8 text-primary" />
-              <div>
-                <h1 className="text-3xl font-bold">Job Requirements</h1>
-                <p className="text-muted-foreground">Track and manage job postings</p>
-              </div>
+      <main className="flex-1 px-6 py-6">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <Briefcase className="w-8 h-8 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold">Job Requirements</h1>
+              <p className="text-muted-foreground">Track and manage job postings</p>
             </div>
-            <Button onClick={handleAddJobRequirement} className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Job Requirement
-            </Button>
           </div>
+          <Button onClick={handleAddJobRequirement} className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Add Job Requirement
+          </Button>
+        </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Total</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.total}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Active</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">{stats.active}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Closed</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-gray-600">{stats.closed}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Inactive</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">On Hold</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-yellow-600">{stats.onHold}</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search by title, client, job ID, or tech stack..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-40">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="Closed">Closed</SelectItem>
-                <SelectItem value="Inactive">Inactive</SelectItem>
-                <SelectItem value="OnHold">On Hold</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-              <SelectTrigger className="w-full md:w-40">
-                <SelectValue placeholder="Filter by priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Priority</SelectItem>
-                <SelectItem value="Low">Low</SelectItem>
-                <SelectItem value="Medium">Medium</SelectItem>
-                <SelectItem value="High">High</SelectItem>
-                <SelectItem value="Urgent">Urgent</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Job Requirements Table */}
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <Card>
-            <CardContent className="p-0">
-              <JobRequirementTable
-                jobRequirements={filteredJobRequirements}
-                onEdit={handleEditJobRequirement}
-                onDelete={handleDeleteJobRequirement}
-              />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Total</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.total}</div>
             </CardContent>
           </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Active</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Closed</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-600">{stats.closed}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Inactive</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">On Hold</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-yellow-600">{stats.onHold}</div>
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Dialog */}
-          <JobRequirementDialog
-            isOpen={isDialogOpen}
-            onClose={() => setIsDialogOpen(false)}
-            onSave={handleSaveJobRequirement}
-            editingJobRequirement={editingJobRequirement}
-          />
-        </main>
-      </div>
+        {/* Filters */}
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder="Search by title, client, job ID, or tech stack..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full md:w-40">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="Closed">Closed</SelectItem>
+              <SelectItem value="Inactive">Inactive</SelectItem>
+              <SelectItem value="OnHold">On Hold</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <SelectTrigger className="w-full md:w-40">
+              <SelectValue placeholder="Filter by priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Priority</SelectItem>
+              <SelectItem value="Low">Low</SelectItem>
+              <SelectItem value="Medium">Medium</SelectItem>
+              <SelectItem value="High">High</SelectItem>
+              <SelectItem value="Urgent">Urgent</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Job Requirements Table */}
+        <Card>
+          <CardContent className="p-0">
+            <JobRequirementTable
+              jobRequirements={filteredJobRequirements}
+              onEdit={handleEditJobRequirement}
+              onDelete={handleDeleteJobRequirement}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Dialog */}
+        <JobRequirementDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          onSave={handleSaveJobRequirement}
+          editingJobRequirement={editingJobRequirement}
+        />
+      </main>
     </div>
   );
 };
