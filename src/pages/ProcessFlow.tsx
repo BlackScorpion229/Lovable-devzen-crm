@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import ProcessFlowTable from '@/components/processFlow/ProcessFlowTable';
@@ -5,77 +6,128 @@ import ProcessFlowDialog from '@/components/processFlow/ProcessFlowDialog';
 import { Plus, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ProcessFlow, ProcessFlowFormData } from '@/types/processFlow';
+import { ProcessFlowItem } from '@/types/processFlow';
 import { useToast } from '@/hooks/use-toast';
 
 const ProcessFlowPage = () => {
   const { toast } = useToast();
   
-  // Sample data with job IDs
-  const [processFlows, setProcessFlows] = useState<ProcessFlow[]>([
+  // Sample data using ProcessFlowItem type
+  const [processFlows, setProcessFlows] = useState<ProcessFlowItem[]>([
     {
       id: '1',
-      jobId: 'DZ-DS-0001',
+      jobRequirementId: 'DZ-DS-0001',
       jobTitle: 'Senior Data Scientist',
-      client: 'ABC Corp',
-      status: 'In Progress',
+      candidateName: 'John Smith',
       currentStage: 'Interview',
-      assignedTo: 'Alice Johnson',
+      startDate: '2024-01-15',
+      expectedCompletionDate: '2024-03-15',
+      status: 'Active',
       priority: 'High',
-      createdAt: '2024-01-15',
-      updatedAt: '2024-02-01',
-      notes: 'Initial screening completed, technical interview scheduled'
+      notes: 'Initial screening completed, technical interview scheduled',
+      history: [
+        {
+          id: '1',
+          stageId: 'sourcing',
+          stageName: 'Sourcing',
+          enteredDate: '2024-01-15',
+          completedDate: '2024-01-20',
+          duration: 5,
+          notes: 'Candidate sourced from LinkedIn',
+          updatedBy: 'Alice Johnson'
+        },
+        {
+          id: '2',
+          stageId: 'screening',
+          stageName: 'Screening',
+          enteredDate: '2024-01-20',
+          completedDate: '2024-01-25',
+          duration: 5,
+          notes: 'Phone screening completed successfully',
+          updatedBy: 'Alice Johnson'
+        }
+      ]
     },
     {
       id: '2',
-      jobId: 'DZ-DE-0001',
+      jobRequirementId: 'DZ-DE-0001',
       jobTitle: 'Data Engineer',
-      client: 'XYZ Ltd',
-      status: 'Completed',
+      candidateName: 'Sarah Wilson',
       currentStage: 'Hired',
-      assignedTo: 'Bob Martin',
+      startDate: '2024-01-10',
+      expectedCompletionDate: '2024-02-10',
+      status: 'Completed',
       priority: 'Medium',
-      createdAt: '2024-01-10',
-      updatedAt: '2024-01-30',
-      notes: 'Successfully placed candidate, contract signed'
+      notes: 'Successfully placed candidate, contract signed',
+      history: [
+        {
+          id: '3',
+          stageId: 'sourcing',
+          stageName: 'Sourcing',
+          enteredDate: '2024-01-10',
+          completedDate: '2024-01-12',
+          duration: 2,
+          notes: 'Candidate referred by existing employee',
+          updatedBy: 'Bob Martin'
+        }
+      ]
     },
     {
       id: '3',
-      jobId: 'DZ-DO-0001',
+      jobRequirementId: 'DZ-DO-0001',
       jobTitle: 'DevOps Engineer',
-      client: 'TechFlow',
-      status: 'In Progress',
+      candidateName: 'Mike Davis',
       currentStage: 'Sourcing',
-      assignedTo: 'Charlie Davis',
+      startDate: '2024-01-20',
+      status: 'Active',
       priority: 'High',
-      createdAt: '2024-01-20',
-      updatedAt: '2024-02-05',
-      notes: 'Actively sourcing candidates, several prospects identified'
+      notes: 'Actively sourcing candidates, several prospects identified',
+      history: [
+        {
+          id: '4',
+          stageId: 'sourcing',
+          stageName: 'Sourcing',
+          enteredDate: '2024-01-20',
+          notes: 'Started candidate search',
+          updatedBy: 'Charlie Davis'
+        }
+      ]
     },
     {
       id: '4',
-      jobId: 'DZ-AI-0001',
+      jobRequirementId: 'DZ-AI-0001',
       jobTitle: 'AI/ML Engineer',
-      client: 'InnovateTech',
-      status: 'On Hold',
+      candidateName: 'Lisa Chen',
       currentStage: 'Client Review',
-      assignedTo: 'Diana Evans',
+      startDate: '2024-02-05',
+      expectedCompletionDate: '2024-04-05',
+      status: 'OnHold',
       priority: 'Medium',
-      createdAt: '2024-02-05',
-      updatedAt: '2024-02-10',
-      notes: 'Waiting for client feedback on job requirements'
+      notes: 'Waiting for client feedback on job requirements',
+      history: [
+        {
+          id: '5',
+          stageId: 'sourcing',
+          stageName: 'Sourcing',
+          enteredDate: '2024-02-05',
+          completedDate: '2024-02-10',
+          duration: 5,
+          notes: 'Candidate sourced and initial contact made',
+          updatedBy: 'Diana Evans'
+        }
+      ]
     }
   ]);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingProcessFlow, setEditingProcessFlow] = useState<ProcessFlow | null>(null);
+  const [editingProcessFlow, setEditingProcessFlow] = useState<ProcessFlowItem | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredProcessFlows = processFlows.filter(flow =>
     flow.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    flow.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    flow.jobId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    flow.assignedTo.toLowerCase().includes(searchTerm.toLowerCase())
+    flow.candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    flow.jobRequirementId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    flow.currentStage.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddProcessFlow = () => {
@@ -83,7 +135,7 @@ const ProcessFlowPage = () => {
     setIsDialogOpen(true);
   };
 
-  const handleEditProcessFlow = (processFlow: ProcessFlow) => {
+  const handleEditProcessFlow = (processFlow: ProcessFlowItem) => {
     setEditingProcessFlow(processFlow);
     setIsDialogOpen(true);
   };
@@ -96,11 +148,11 @@ const ProcessFlowPage = () => {
     });
   };
 
-  const handleSaveProcessFlow = (flowData: ProcessFlowFormData) => {
+  const handleSaveProcessFlow = (flowData: Omit<ProcessFlowItem, 'id' | 'history'>) => {
     if (editingProcessFlow) {
       setProcessFlows(processFlows.map(f => 
         f.id === editingProcessFlow.id 
-          ? { ...f, ...flowData, updatedAt: new Date().toISOString().split('T')[0] }
+          ? { ...f, ...flowData }
           : f
       ));
       toast({
@@ -108,11 +160,10 @@ const ProcessFlowPage = () => {
         description: "The process flow has been successfully updated.",
       });
     } else {
-      const newProcessFlow: ProcessFlow = {
+      const newProcessFlow: ProcessFlowItem = {
         id: Date.now().toString(),
         ...flowData,
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0]
+        history: []
       };
       setProcessFlows([...processFlows, newProcessFlow]);
       toast({
@@ -144,7 +195,7 @@ const ProcessFlowPage = () => {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Search by job title, client, or assignee..."
+                placeholder="Search by job title, candidate, or job ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-white/50 backdrop-blur-sm"
@@ -161,6 +212,7 @@ const ProcessFlowPage = () => {
           <ProcessFlowTable
             processFlows={filteredProcessFlows}
             onEdit={handleEditProcessFlow}
+            onView={handleEditProcessFlow}
             onDelete={handleDeleteProcessFlow}
           />
         </div>
