@@ -1,208 +1,175 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import { GitBranch, Plus, Search, Filter } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import ProcessFlowTable from '@/components/processFlow/ProcessFlowTable';
 import ProcessFlowDialog from '@/components/processFlow/ProcessFlowDialog';
-import { ProcessFlowItem } from '@/types/processFlow';
+import { Plus, Search, Filter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ProcessFlow, ProcessFlowFormData } from '@/types/processFlow';
+import { useToast } from '@/hooks/use-toast';
 
 const ProcessFlowPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingFlow, setEditingFlow] = useState<ProcessFlowItem | undefined>();
+  const { toast } = useToast();
   
   // Sample data with job IDs
-  const [processFlows, setProcessFlows] = useState<ProcessFlowItem[]>([
+  const [processFlows, setProcessFlows] = useState<ProcessFlow[]>([
     {
       id: '1',
-      jobRequirementId: 'DZ-DS-0001',
+      jobId: 'DZ-DS-0001',
       jobTitle: 'Senior Data Scientist',
-      candidateName: 'John Smith',
-      currentStage: 'Client Interview',
-      startDate: '2024-01-15',
-      expectedCompletionDate: '2024-02-15',
-      status: 'Active',
+      client: 'ABC Corp',
+      status: 'In Progress',
+      currentStage: 'Interview',
+      assignedTo: 'Alice Johnson',
       priority: 'High',
-      notes: 'Strong technical skills, good cultural fit',
-      history: []
+      createdAt: '2024-01-15',
+      updatedAt: '2024-02-01',
+      notes: 'Initial screening completed, technical interview scheduled'
     },
     {
       id: '2',
-      jobRequirementId: 'DZ-DO-0001',
-      jobTitle: 'DevOps Engineer',
-      candidateName: 'Sarah Johnson',
-      currentStage: 'Technical Assessment',
-      startDate: '2024-01-20',
-      expectedCompletionDate: '2024-02-20',
-      status: 'Active',
+      jobId: 'DZ-DE-0001',
+      jobTitle: 'Data Engineer',
+      client: 'XYZ Ltd',
+      status: 'Completed',
+      currentStage: 'Hired',
+      assignedTo: 'Bob Martin',
       priority: 'Medium',
-      notes: 'AWS certification, 5 years experience',
-      history: []
+      createdAt: '2024-01-10',
+      updatedAt: '2024-01-30',
+      notes: 'Successfully placed candidate, contract signed'
     },
     {
       id: '3',
-      jobRequirementId: 'DZ-DE-0001',
-      jobTitle: 'Data Engineering Lead',
-      candidateName: 'Mike Wilson',
-      currentStage: 'Offer Discussion',
-      startDate: '2024-01-10',
-      expectedCompletionDate: '2024-02-10',
-      status: 'Active',
-      priority: 'Urgent',
-      notes: 'Excellent performance in all rounds',
-      history: []
+      jobId: 'DZ-DO-0001',
+      jobTitle: 'DevOps Engineer',
+      client: 'TechFlow',
+      status: 'In Progress',
+      currentStage: 'Sourcing',
+      assignedTo: 'Charlie Davis',
+      priority: 'High',
+      createdAt: '2024-01-20',
+      updatedAt: '2024-02-05',
+      notes: 'Actively sourcing candidates, several prospects identified'
+    },
+    {
+      id: '4',
+      jobId: 'DZ-AI-0001',
+      jobTitle: 'AI/ML Engineer',
+      client: 'InnovateTech',
+      status: 'On Hold',
+      currentStage: 'Client Review',
+      assignedTo: 'Diana Evans',
+      priority: 'Medium',
+      createdAt: '2024-02-05',
+      updatedAt: '2024-02-10',
+      notes: 'Waiting for client feedback on job requirements'
     }
   ]);
 
-  const handleAdd = () => {
-    setEditingFlow(undefined);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingProcessFlow, setEditingProcessFlow] = useState<ProcessFlow | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredProcessFlows = processFlows.filter(flow =>
+    flow.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    flow.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    flow.jobId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    flow.assignedTo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAddProcessFlow = () => {
+    setEditingProcessFlow(null);
     setIsDialogOpen(true);
   };
 
-  const handleEdit = (flow: ProcessFlowItem) => {
-    setEditingFlow(flow);
+  const handleEditProcessFlow = (processFlow: ProcessFlow) => {
+    setEditingProcessFlow(processFlow);
     setIsDialogOpen(true);
   };
 
-  const handleView = (flow: ProcessFlowItem) => {
-    console.log('Viewing flow:', flow);
-    // Implement view functionality
+  const handleDeleteProcessFlow = (flowId: string) => {
+    setProcessFlows(processFlows.filter(f => f.id !== flowId));
+    toast({
+      title: "Process flow deleted",
+      description: "The process flow has been successfully removed.",
+    });
   };
 
-  const handleSave = (flowData: Omit<ProcessFlowItem, 'id' | 'history'>) => {
-    if (editingFlow) {
-      setProcessFlows(flows => flows.map(flow => 
-        flow.id === editingFlow.id 
-          ? { ...flow, ...flowData }
-          : flow
+  const handleSaveProcessFlow = (flowData: ProcessFlowFormData) => {
+    if (editingProcessFlow) {
+      setProcessFlows(processFlows.map(f => 
+        f.id === editingProcessFlow.id 
+          ? { ...f, ...flowData, updatedAt: new Date().toISOString().split('T')[0] }
+          : f
       ));
+      toast({
+        title: "Process flow updated",
+        description: "The process flow has been successfully updated.",
+      });
     } else {
-      const newFlow: ProcessFlowItem = {
+      const newProcessFlow: ProcessFlow = {
         id: Date.now().toString(),
         ...flowData,
-        history: []
+        createdAt: new Date().toISOString().split('T')[0],
+        updatedAt: new Date().toISOString().split('T')[0]
       };
-      setProcessFlows(flows => [...flows, newFlow]);
+      setProcessFlows([...processFlows, newProcessFlow]);
+      toast({
+        title: "Process flow added",
+        description: "The new process flow has been successfully added.",
+      });
     }
+    setIsDialogOpen(false);
   };
-
-  const filteredFlows = processFlows.filter(flow => {
-    const matchesSearch = flow.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         flow.candidateName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         flow.jobRequirementId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         flow.currentStage.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'All' || flow.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-  const getStatusCounts = () => {
-    return {
-      total: processFlows.length,
-      active: processFlows.filter(f => f.status === 'Active').length,
-      completed: processFlows.filter(f => f.status === 'Completed').length,
-      onHold: processFlows.filter(f => f.status === 'OnHold').length,
-      cancelled: processFlows.filter(f => f.status === 'Cancelled').length
-    };
-  };
-
-  const statusCounts = getStatusCounts();
 
   return (
     <div className="flex-1 flex flex-col">
       <Navbar 
         title="Process Flow" 
-        subtitle="Track requirement fulfillment workflow"
+        subtitle="Track and manage recruitment processes"
       />
       
       <main className="flex-1 px-6 py-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <GitBranch className="w-8 h-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold">Process Flow</h1>
-              <p className="text-muted-foreground">Monitor requirement workflow stages</p>
-            </div>
-          </div>
-          <Button onClick={handleAdd} className="flex items-center gap-2">
+          <p className="text-muted-foreground">Monitor recruitment stages and progress</p>
+          <Button onClick={handleAddProcessFlow} className="flex items-center gap-2 shadow-lg">
             <Plus className="w-4 h-4" />
-            Start New Process
+            Add Process Flow
           </Button>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-card rounded-lg border p-4">
-            <div className="text-2xl font-bold text-primary">{statusCounts.total}</div>
-            <div className="text-sm text-muted-foreground">Total Processes</div>
-          </div>
-          <div className="bg-card rounded-lg border p-4">
-            <div className="text-2xl font-bold text-green-600">{statusCounts.active}</div>
-            <div className="text-sm text-muted-foreground">Active</div>
-          </div>
-          <div className="bg-card rounded-lg border p-4">
-            <div className="text-2xl font-bold text-blue-600">{statusCounts.completed}</div>
-            <div className="text-sm text-muted-foreground">Completed</div>
-          </div>
-          <div className="bg-card rounded-lg border p-4">
-            <div className="text-2xl font-bold text-yellow-600">{statusCounts.onHold}</div>
-            <div className="text-sm text-muted-foreground">On Hold</div>
-          </div>
-          <div className="bg-card rounded-lg border p-4">
-            <div className="text-2xl font-bold text-red-600">{statusCounts.cancelled}</div>
-            <div className="text-sm text-muted-foreground">Cancelled</div>
+        <div className="mb-6">
+          <div className="flex gap-4 items-center">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Search by job title, client, or assignee..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-white/50 backdrop-blur-sm"
+              />
+            </div>
+            <Button variant="outline" className="flex items-center gap-2 bg-white/50 backdrop-blur-sm">
+              <Filter className="w-4 h-4" />
+              Filter
+            </Button>
           </div>
         </div>
 
-        {/* Search and Filter */}
-        <div className="flex gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              placeholder="Search by job title, candidate, job ID, or stage..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-48">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All Status</SelectItem>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="Completed">Completed</SelectItem>
-              <SelectItem value="OnHold">On Hold</SelectItem>
-              <SelectItem value="Cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Process Flow Table */}
-        <div className="bg-card rounded-lg border">
+        <div className="glass-card rounded-lg border">
           <ProcessFlowTable
-            processFlows={filteredFlows}
-            onEdit={handleEdit}
-            onView={handleView}
+            processFlows={filteredProcessFlows}
+            onEdit={handleEditProcessFlow}
+            onDelete={handleDeleteProcessFlow}
           />
         </div>
 
-        {/* Dialog */}
         <ProcessFlowDialog
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
-          onSave={handleSave}
-          processFlow={editingFlow}
+          onSave={handleSaveProcessFlow}
+          processFlow={editingProcessFlow}
         />
       </main>
     </div>

@@ -101,7 +101,8 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-gradient-to-br from-blue-50/30 via-white/20 to-purple-50/30 text-foreground font-sans min-h-screen;
+    background-attachment: fixed;
   }
 
   /* Custom scrollbar */
@@ -130,6 +131,14 @@
 
   .glass-card-hover {
     @apply transition-all duration-300 hover:shadow-glass-hover hover:bg-white/90 dark:hover:bg-card/90;
+  }
+
+  .glass-sidebar {
+    @apply bg-gradient-to-b from-primary/90 via-primary/80 to-primary/70 backdrop-blur-xl border-r border-white/20 shadow-2xl;
+  }
+
+  .glass-main {
+    @apply bg-white/30 dark:bg-black/30 backdrop-blur-sm;
   }
 
   .neo-card {

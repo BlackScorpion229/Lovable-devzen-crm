@@ -25,7 +25,7 @@ const App = () => (
         <SidebarProvider>
           <div className="min-h-screen flex w-full">
             <AppSidebar />
-            <main className="flex-1">
+            <main className="flex-1 glass-main">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/vendors" element={<VendorsPage />} />

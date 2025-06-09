@@ -1,97 +1,95 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CalendarDays, Phone, Video, MessageSquare, Clock } from 'lucide-react';
-import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { CalendarIcon, Clock, Users, Plus } from 'lucide-react';
 
-const CalendarPage: React.FC = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+const CalendarPage = () => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
-  const allActivities = [
+  // Mock data for activities
+  const todayActivities = [
     {
       id: '1',
-      title: 'Screening Call - John Doe',
-      type: 'Screening Call',
-      time: '10:00 AM',
-      date: '2024-06-05',
-      status: 'Scheduled',
-      color: 'bg-blue-100 text-blue-800',
-      icon: Phone
+      time: '09:00 AM',
+      title: 'Technical Interview - Senior Data Scientist',
+      client: 'ABC Corp',
+      type: 'Interview',
+      priority: 'High'
     },
     {
       id: '2',
-      title: 'Client Interview - Jane Smith',
-      type: 'Client Call',
-      time: '2:00 PM',
-      date: '2024-06-05',
-      status: 'In Progress',
-      color: 'bg-green-100 text-green-800',
-      icon: Video
+      time: '02:00 PM',
+      title: 'Client Meeting - Project Kickoff',
+      client: 'XYZ Ltd',
+      type: 'Meeting',
+      priority: 'Medium'
     },
     {
       id: '3',
-      title: 'Technical Round - Mike Johnson',
-      type: 'Technical Interview',
-      time: '11:00 AM',
-      date: '2024-06-06',
-      status: 'Pending',
-      color: 'bg-yellow-100 text-yellow-800',
-      icon: MessageSquare
-    },
-    {
-      id: '4',
-      title: 'Follow-up Call - Sarah Wilson',
-      type: 'Follow-up',
-      time: '3:30 PM',
-      date: '2024-06-06',
-      status: 'Confirmed',
-      color: 'bg-purple-100 text-purple-800',
-      icon: Phone
-    },
-    {
-      id: '5',
-      title: 'Final Interview - Alex Brown',
-      type: 'Final Round',
-      time: '9:00 AM',
-      date: format(new Date(), 'yyyy-MM-dd'),
-      status: 'Scheduled',
-      color: 'bg-blue-100 text-blue-800',
-      icon: Video
-    },
-    {
-      id: '6',
-      title: 'Reference Check - Lisa Davis',
-      type: 'Reference Call',
-      time: '4:00 PM',
-      date: format(new Date(), 'yyyy-MM-dd'),
-      status: 'Pending',
-      color: 'bg-yellow-100 text-yellow-800',
-      icon: Phone
+      time: '04:30 PM',
+      title: 'Candidate Screening Call',
+      client: 'TechFlow',
+      type: 'Screening',
+      priority: 'Low'
     }
   ];
 
-  const upcomingActivities = allActivities.filter(activity => 
-    new Date(activity.date) >= new Date()
-  ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const upcomingActivities = [
+    {
+      id: '4',
+      date: 'Tomorrow',
+      time: '10:00 AM',
+      title: 'Final Interview - DevOps Engineer',
+      client: 'InnovateTech',
+      type: 'Interview'
+    },
+    {
+      id: '5',
+      date: 'Dec 12',
+      time: '11:30 AM',
+      title: 'Contract Review Meeting',
+      client: 'DataFlow Corp',
+      type: 'Meeting'
+    },
+    {
+      id: '6',
+      date: 'Dec 15',
+      time: '03:00 PM',
+      title: 'Quarterly Business Review',
+      client: 'Multiple Clients',
+      type: 'Review'
+    }
+  ];
 
-  const selectedDateActivities = date ? allActivities.filter(activity => 
-    activity.date === format(date, 'yyyy-MM-dd')
-  ) : [];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Scheduled':
-        return 'bg-blue-100 text-blue-800';
-      case 'In Progress':
-        return 'bg-green-100 text-green-800';
-      case 'Pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Confirmed':
-        return 'bg-purple-100 text-purple-800';
+  const getActivityColor = (type: string) => {
+    switch (type) {
+      case 'Interview':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Meeting':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'Screening':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Review':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'High':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'Medium':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'Low':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -99,146 +97,77 @@ const CalendarPage: React.FC = () => {
     <div className="flex-1 flex flex-col">
       <Navbar 
         title="Calendar" 
-        subtitle="Schedule and track job requirement activities"
+        subtitle="Manage your schedule and appointments"
       />
       
       <main className="flex-1 px-6 py-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <CalendarDays className="w-8 h-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold">Calendar</h1>
-              <p className="text-muted-foreground">Track job requirement workflows and activities</p>
-            </div>
-          </div>
-        </div>
-        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Calendar View</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  className="rounded-md border"
-                />
-              </CardContent>
-            </Card>
+          {/* Calendar Widget */}
+          <Card className="glass-card">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <CalendarIcon className="w-5 h-5" />
+                Calendar
+              </CardTitle>
+              <Button size="sm" className="shadow-md">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Event
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                className="rounded-md border-0"
+              />
+            </CardContent>
+          </Card>
 
-            {/* Status Legend */}
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle className="text-lg">Status Legend</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm">Scheduled</span>
+          {/* Today's Activities */}
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5" />
+                Today's Activities
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {todayActivities.map((activity) => (
+                <div key={activity.id} className="p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-primary">{activity.time}</span>
+                    <Badge className={getPriorityColor(activity.priority)}>{activity.priority}</Badge>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">In Progress</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm">Pending</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                    <span className="text-sm">Confirmed</span>
-                  </div>
+                  <h4 className="font-semibold text-sm mb-1">{activity.title}</h4>
+                  <p className="text-xs text-muted-foreground mb-2">{activity.client}</p>
+                  <Badge className={getActivityColor(activity.type)}>{activity.type}</Badge>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 h-fit">
-              {/* Selected Date Activities */}
-              <Card className="h-fit">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <CalendarDays className="w-5 h-5" />
-                    {date ? format(date, 'MMM d, yyyy') : 'Selected Date'}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {selectedDateActivities.length > 0 ? (
-                    <div className="space-y-3">
-                      {selectedDateActivities.map((activity) => (
-                        <div key={activity.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex gap-2">
-                              <div className="p-1.5 bg-primary/10 text-primary rounded-md">
-                                <activity.icon className="w-3 h-3" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm truncate">{activity.title}</h4>
-                                <p className="text-xs text-muted-foreground">{activity.type}</p>
-                                <div className="flex items-center gap-1 mt-1">
-                                  <Clock className="w-3 h-3 text-muted-foreground" />
-                                  <span className="text-xs font-medium">{activity.time}</span>
-                                </div>
-                              </div>
-                            </div>
-                            <Badge className={`${getStatusColor(activity.status)} text-xs`}>
-                              {activity.status}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <CalendarDays className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">No activities for this date</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              ))}
+            </CardContent>
+          </Card>
 
-              {/* Upcoming Activities */}
-              <Card className="h-fit">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Clock className="w-5 h-5" />
-                    Upcoming Activities
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {upcomingActivities.slice(0, 5).map((activity) => (
-                      <div key={activity.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex gap-2">
-                            <div className="p-1.5 bg-primary/10 text-primary rounded-md">
-                              <activity.icon className="w-3 h-3" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-sm truncate">{activity.title}</h4>
-                              <p className="text-xs text-muted-foreground">{activity.type}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs font-medium">{activity.date}</span>
-                                <span className="text-xs text-muted-foreground">{activity.time}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <Badge className={`${getStatusColor(activity.status)} text-xs`}>
-                            {activity.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
+          {/* Upcoming Activities */}
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                Upcoming Activities
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {upcomingActivities.map((activity) => (
+                <div key={activity.id} className="p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-primary">{activity.date} - {activity.time}</span>
+                    <Badge className={getActivityColor(activity.type)}>{activity.type}</Badge>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+                  <h4 className="font-semibold text-sm mb-1">{activity.title}</h4>
+                  <p className="text-xs text-muted-foreground">{activity.client}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>

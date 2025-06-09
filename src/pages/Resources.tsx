@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import ResourceTable from '@/components/resource/ResourceTable';
 import ResourceDialog from '@/components/resource/ResourceDialog';
-import { Users, Plus, Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Resource, ResourceFormData } from '@/types/resource';
@@ -144,14 +144,8 @@ const ResourcesPage = () => {
       
       <main className="flex-1 px-6 py-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <Users className="w-8 h-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold">Resources</h1>
-              <p className="text-muted-foreground">Manage your talent pool and skill sets</p>
-            </div>
-          </div>
-          <Button onClick={handleAddResource} className="flex items-center gap-2">
+          <p className="text-muted-foreground">Manage your talent pool and skill sets</p>
+          <Button onClick={handleAddResource} className="flex items-center gap-2 shadow-lg">
             <Plus className="w-4 h-4" />
             Add Resource
           </Button>
@@ -164,12 +158,12 @@ const ResourcesPage = () => {
               placeholder="Search resources by name, tech stack, or contact..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-white/50 backdrop-blur-sm"
             />
           </div>
         </div>
 
-        <div className="bg-card rounded-lg border">
+        <div className="glass-card rounded-lg border">
           <ResourceTable
             resources={filteredResources}
             onEdit={handleEditResource}
