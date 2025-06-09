@@ -1,4 +1,3 @@
-
 export interface JobRequirement {
   id: string;
   jobId: string; // New field for unique job ID like DZ-DS-0001
@@ -17,9 +16,13 @@ export interface JobRequirement {
   status: 'Active' | 'Closed' | 'Inactive' | 'OnHold';
   priority: 'Low' | 'Medium' | 'High' | 'Urgent';
   createdAt: string;
+  updatedAt: string;
   deadline?: string;
   assignedResources?: string[];
   notes?: string;
+  budget?: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface JobRequirementFormData {

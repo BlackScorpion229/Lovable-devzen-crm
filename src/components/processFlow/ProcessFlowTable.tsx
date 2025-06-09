@@ -10,19 +10,21 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit2, Eye, Clock, Calendar } from 'lucide-react';
+import { Edit2, Eye, Clock, Calendar, Trash2 } from 'lucide-react';
 import { ProcessFlowItem } from '@/types/processFlow';
 
 interface ProcessFlowTableProps {
   processFlows: ProcessFlowItem[];
   onEdit: (processFlow: ProcessFlowItem) => void;
   onView: (processFlow: ProcessFlowItem) => void;
+  onDelete: (flowId: string) => void;
 }
 
 const ProcessFlowTable: React.FC<ProcessFlowTableProps> = ({ 
   processFlows, 
   onEdit, 
-  onView 
+  onView,
+  onDelete
 }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -127,6 +129,14 @@ const ProcessFlowTable: React.FC<ProcessFlowTableProps> = ({
                   className="h-8 w-8 p-0"
                 >
                   <Edit2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(flow.id)}
+                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </TableCell>

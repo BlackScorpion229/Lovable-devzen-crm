@@ -31,3 +31,29 @@ export interface ProcessFlowHistory {
   notes?: string;
   updatedBy: string;
 }
+
+// Add the missing ProcessFlow and ProcessFlowFormData types
+export interface ProcessFlow {
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  client: string;
+  status: string;
+  currentStage: string;
+  assignedTo: string;
+  priority: string;
+  createdAt: string;
+  updatedAt: string;
+  notes?: string;
+}
+
+export interface ProcessFlowFormData {
+  jobId: string;
+  jobTitle: string;
+  client: string;
+  status: string;
+  currentStage: string;
+  assignedTo: string;
+  priority: string;
+  notes?: string;
+}

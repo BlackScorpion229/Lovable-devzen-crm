@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -14,14 +13,14 @@ interface JobRequirementDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: JobRequirementFormData) => void;
-  editingJobRequirement?: JobRequirement | null;
+  jobRequirement?: JobRequirement | null;
 }
 
 const JobRequirementDialog: React.FC<JobRequirementDialogProps> = ({
   isOpen,
   onClose,
   onSave,
-  editingJobRequirement
+  jobRequirement
 }) => {
   const [formData, setFormData] = useState<JobRequirementFormData>({
     title: '',
@@ -46,21 +45,21 @@ const JobRequirementDialog: React.FC<JobRequirementDialogProps> = ({
   const [newTech, setNewTech] = useState('');
 
   useEffect(() => {
-    if (editingJobRequirement) {
+    if (jobRequirement) {
       setFormData({
-        title: editingJobRequirement.title,
-        client: editingJobRequirement.client,
-        vendor: editingJobRequirement.vendor || '',
-        description: editingJobRequirement.description,
-        techStack: editingJobRequirement.techStack,
-        experience: editingJobRequirement.experience,
-        location: editingJobRequirement.location,
-        salary: editingJobRequirement.salary || { min: 0, max: 0, currency: 'USD' },
-        status: editingJobRequirement.status,
-        priority: editingJobRequirement.priority,
-        deadline: editingJobRequirement.deadline || '',
-        assignedResources: editingJobRequirement.assignedResources || [],
-        notes: editingJobRequirement.notes || ''
+        title: jobRequirement.title,
+        client: jobRequirement.client,
+        vendor: jobRequirement.vendor || '',
+        description: jobRequirement.description,
+        techStack: jobRequirement.techStack,
+        experience: jobRequirement.experience,
+        location: jobRequirement.location,
+        salary: jobRequirement.salary || { min: 0, max: 0, currency: 'USD' },
+        status: jobRequirement.status,
+        priority: jobRequirement.priority,
+        deadline: jobRequirement.deadline || '',
+        assignedResources: jobRequirement.assignedResources || [],
+        notes: jobRequirement.notes || ''
       });
     } else {
       setFormData({
@@ -83,7 +82,7 @@ const JobRequirementDialog: React.FC<JobRequirementDialogProps> = ({
         notes: ''
       });
     }
-  }, [editingJobRequirement, isOpen]);
+  }, [jobRequirement, isOpen]);
 
   const handleInputChange = (field: keyof JobRequirementFormData, value: any) => {
     setFormData(prev => ({
@@ -130,7 +129,7 @@ const JobRequirementDialog: React.FC<JobRequirementDialogProps> = ({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {editingJobRequirement ? 'Edit Job Requirement' : 'Add New Job Requirement'}
+            {jobRequirement ? 'Edit Job Requirement' : 'Add New Job Requirement'}
           </DialogTitle>
         </DialogHeader>
 
@@ -323,7 +322,7 @@ const JobRequirementDialog: React.FC<JobRequirementDialogProps> = ({
               Cancel
             </Button>
             <Button type="submit">
-              {editingJobRequirement ? 'Update' : 'Create'} Job Requirement
+              {jobRequirement ? 'Update' : 'Create'} Job Requirement
             </Button>
           </div>
         </form>
