@@ -32,7 +32,18 @@ export interface ProcessFlowHistory {
   updatedBy: string;
 }
 
-// Add the missing ProcessFlow and ProcessFlowFormData types
+export interface ProcessFlowFormData {
+  jobRequirementId: string;
+  candidateName: string;
+  currentStage: string;
+  startDate: string;
+  expectedCompletionDate?: string;
+  status: 'Active' | 'Completed' | 'OnHold' | 'Cancelled';
+  priority: 'Low' | 'Medium' | 'High' | 'Urgent';
+  notes?: string;
+}
+
+// Legacy types for backward compatibility
 export interface ProcessFlow {
   id: string;
   jobId: string;
@@ -44,16 +55,5 @@ export interface ProcessFlow {
   priority: string;
   createdAt: string;
   updatedAt: string;
-  notes?: string;
-}
-
-export interface ProcessFlowFormData {
-  jobId: string;
-  jobTitle: string;
-  client: string;
-  status: string;
-  currentStage: string;
-  assignedTo: string;
-  priority: string;
   notes?: string;
 }

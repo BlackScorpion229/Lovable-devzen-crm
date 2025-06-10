@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ProcessFlowItem, ProcessFlowFormData } from '@/types/processFlow';
@@ -26,7 +25,7 @@ export const useProcessFlows = () => {
         candidateName: flow.candidate_name,
         currentStage: flow.current_stage,
         status: flow.status as 'Active' | 'OnHold' | 'Completed' | 'Cancelled',
-        priority: flow.priority,
+        priority: flow.priority as 'Low' | 'Medium' | 'High' | 'Urgent',
         startDate: flow.start_date,
         expectedCompletionDate: flow.expected_completion_date,
         notes: flow.notes,

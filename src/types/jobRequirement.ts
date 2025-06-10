@@ -1,3 +1,4 @@
+
 export interface JobRequirement {
   id: string;
   jobId: string; // New field for unique job ID like DZ-DS-0001
@@ -43,6 +44,8 @@ export interface JobRequirementFormData {
   deadline?: string;
   assignedResources?: string[];
   notes?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 // Helper function to generate job ID based on title

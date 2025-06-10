@@ -25,6 +25,7 @@ export interface VendorFormData {
   industry?: string;
   status: 'active' | 'inactive' | 'pending';
   notes?: string;
+  contacts?: ContactFormData[];
 }
 
 export interface ContactFormData {

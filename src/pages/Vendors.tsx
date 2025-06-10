@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import VendorTable from '@/components/vendor/VendorTable';
@@ -49,12 +48,14 @@ const VendorsPage = () => {
     if (editingVendor) {
       updateVendorMutation.mutate({
         vendorId: editingVendor.id,
-        vendorData,
-        contacts: contacts.map(contact => ({ ...contact, isPrimary: contact.isPrimary }))
+        vendorData: {
+          ...vendorData,
+          contacts: contacts.map(contact => ({ ...contact, isPrimary: contact.isPrimary }))
+        }
       });
     } else {
       createVendorMutation.mutate({
-        vendorData,
+        ...vendorData,
         contacts: contacts.map(contact => ({ ...contact, isPrimary: contact.isPrimary }))
       });
     }
