@@ -7,117 +7,11 @@ import { Plus, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ProcessFlowItem } from '@/types/processFlow';
-import { useToast } from '@/hooks/use-toast';
+import { useProcessFlows, useDeleteProcessFlow } from '@/hooks/useProcessFlows';
 
 const ProcessFlowPage = () => {
-  const { toast } = useToast();
-  
-  // Sample data using ProcessFlowItem type
-  const [processFlows, setProcessFlows] = useState<ProcessFlowItem[]>([
-    {
-      id: '1',
-      jobRequirementId: 'DZ-DS-0001',
-      jobTitle: 'Senior Data Scientist',
-      candidateName: 'John Smith',
-      currentStage: 'Interview',
-      startDate: '2024-01-15',
-      expectedCompletionDate: '2024-03-15',
-      status: 'Active',
-      priority: 'High',
-      notes: 'Initial screening completed, technical interview scheduled',
-      history: [
-        {
-          id: '1',
-          stageId: 'sourcing',
-          stageName: 'Sourcing',
-          enteredDate: '2024-01-15',
-          completedDate: '2024-01-20',
-          duration: 5,
-          notes: 'Candidate sourced from LinkedIn',
-          updatedBy: 'Alice Johnson'
-        },
-        {
-          id: '2',
-          stageId: 'screening',
-          stageName: 'Screening',
-          enteredDate: '2024-01-20',
-          completedDate: '2024-01-25',
-          duration: 5,
-          notes: 'Phone screening completed successfully',
-          updatedBy: 'Alice Johnson'
-        }
-      ]
-    },
-    {
-      id: '2',
-      jobRequirementId: 'DZ-DE-0001',
-      jobTitle: 'Data Engineer',
-      candidateName: 'Sarah Wilson',
-      currentStage: 'Hired',
-      startDate: '2024-01-10',
-      expectedCompletionDate: '2024-02-10',
-      status: 'Completed',
-      priority: 'Medium',
-      notes: 'Successfully placed candidate, contract signed',
-      history: [
-        {
-          id: '3',
-          stageId: 'sourcing',
-          stageName: 'Sourcing',
-          enteredDate: '2024-01-10',
-          completedDate: '2024-01-12',
-          duration: 2,
-          notes: 'Candidate referred by existing employee',
-          updatedBy: 'Bob Martin'
-        }
-      ]
-    },
-    {
-      id: '3',
-      jobRequirementId: 'DZ-DO-0001',
-      jobTitle: 'DevOps Engineer',
-      candidateName: 'Mike Davis',
-      currentStage: 'Sourcing',
-      startDate: '2024-01-20',
-      status: 'Active',
-      priority: 'High',
-      notes: 'Actively sourcing candidates, several prospects identified',
-      history: [
-        {
-          id: '4',
-          stageId: 'sourcing',
-          stageName: 'Sourcing',
-          enteredDate: '2024-01-20',
-          notes: 'Started candidate search',
-          updatedBy: 'Charlie Davis'
-        }
-      ]
-    },
-    {
-      id: '4',
-      jobRequirementId: 'DZ-AI-0001',
-      jobTitle: 'AI/ML Engineer',
-      candidateName: 'Lisa Chen',
-      currentStage: 'Client Review',
-      startDate: '2024-02-05',
-      expectedCompletionDate: '2024-04-05',
-      status: 'OnHold',
-      priority: 'Medium',
-      notes: 'Waiting for client feedback on job requirements',
-      history: [
-        {
-          id: '5',
-          stageId: 'sourcing',
-          stageName: 'Sourcing',
-          enteredDate: '2024-02-05',
-          completedDate: '2024-02-10',
-          duration: 5,
-          notes: 'Candidate sourced and initial contact made',
-          updatedBy: 'Diana Evans'
-        }
-      ]
-    }
-  ]);
+  const { data: processFlows = [], isLoading } = useProcessFlows();
+  const deleteProcessFlowMutation = useDeleteProcessFlow();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProcessFlow, setEditingProcessFlow] = useState<ProcessFlowItem | null>(null);
@@ -141,38 +35,22 @@ const ProcessFlowPage = () => {
   };
 
   const handleDeleteProcessFlow = (flowId: string) => {
-    setProcessFlows(processFlows.filter(f => f.id !== flowId));
-    toast({
-      title: "Process flow deleted",
-      description: "The process flow has been successfully removed.",
-    });
+    deleteProcessFlowMutation.mutate(flowId);
   };
 
-  const handleSaveProcessFlow = (flowData: Omit<ProcessFlowItem, 'id' | 'history'>) => {
-    if (editingProcessFlow) {
-      setProcessFlows(processFlows.map(f => 
-        f.id === editingProcessFlow.id 
-          ? { ...f, ...flowData }
-          : f
-      ));
-      toast({
-        title: "Process flow updated",
-        description: "The process flow has been successfully updated.",
-      });
-    } else {
-      const newProcessFlow: ProcessFlowItem = {
-        id: Date.now().toString(),
-        ...flowData,
-        history: []
-      };
-      setProcessFlows([...processFlows, newProcessFlow]);
-      toast({
-        title: "Process flow added",
-        description: "The new process flow has been successfully added.",
-      });
-    }
-    setIsDialogOpen(false);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex flex-col">
+        <Navbar 
+          title="Process Flow" 
+          subtitle="Track and manage recruitment processes"
+        />
+        <main className="flex-1 px-6 py-6">
+          <div className="text-center">Loading process flows...</div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col">
@@ -220,7 +98,6 @@ const ProcessFlowPage = () => {
         <ProcessFlowDialog
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
-          onSave={handleSaveProcessFlow}
           processFlow={editingProcessFlow}
         />
       </main>

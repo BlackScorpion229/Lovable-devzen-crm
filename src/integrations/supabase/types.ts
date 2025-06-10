@@ -9,7 +9,288 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      contacts: {
+        Row: {
+          email: string
+          id: string
+          is_primary: boolean
+          name: string
+          phone: string
+          position: string | null
+          vendor_id: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          is_primary?: boolean
+          name: string
+          phone: string
+          position?: string | null
+          vendor_id: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          is_primary?: boolean
+          name?: string
+          phone?: string
+          position?: string | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_requirements: {
+        Row: {
+          assigned_resources: Json | null
+          budget: number | null
+          client: string
+          created_at: string
+          deadline: string | null
+          description: string
+          end_date: string | null
+          experience: number
+          id: string
+          job_id: string
+          location: string
+          notes: string | null
+          priority: string
+          salary_currency: string | null
+          salary_max: number | null
+          salary_min: number | null
+          start_date: string | null
+          status: string
+          tech_stack: Json
+          title: string
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          assigned_resources?: Json | null
+          budget?: number | null
+          client: string
+          created_at?: string
+          deadline?: string | null
+          description: string
+          end_date?: string | null
+          experience?: number
+          id?: string
+          job_id: string
+          location: string
+          notes?: string | null
+          priority: string
+          salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          start_date?: string | null
+          status: string
+          tech_stack?: Json
+          title: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          assigned_resources?: Json | null
+          budget?: number | null
+          client?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          end_date?: string | null
+          experience?: number
+          id?: string
+          job_id?: string
+          location?: string
+          notes?: string | null
+          priority?: string
+          salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          start_date?: string | null
+          status?: string
+          tech_stack?: Json
+          title?: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: []
+      }
+      process_flow_history: {
+        Row: {
+          completed_date: string | null
+          duration: number | null
+          entered_date: string
+          id: string
+          notes: string | null
+          process_flow_id: string
+          stage_id: string
+          stage_name: string
+          updated_by: string
+        }
+        Insert: {
+          completed_date?: string | null
+          duration?: number | null
+          entered_date: string
+          id?: string
+          notes?: string | null
+          process_flow_id: string
+          stage_id: string
+          stage_name: string
+          updated_by: string
+        }
+        Update: {
+          completed_date?: string | null
+          duration?: number | null
+          entered_date?: string
+          id?: string
+          notes?: string | null
+          process_flow_id?: string
+          stage_id?: string
+          stage_name?: string
+          updated_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_flow_history_process_flow_id_fkey"
+            columns: ["process_flow_id"]
+            isOneToOne: false
+            referencedRelation: "process_flows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      process_flows: {
+        Row: {
+          candidate_name: string
+          created_at: string
+          current_stage: string
+          expected_completion_date: string | null
+          id: string
+          job_requirement_id: string
+          notes: string | null
+          priority: string
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_name: string
+          created_at?: string
+          current_stage: string
+          expected_completion_date?: string | null
+          id?: string
+          job_requirement_id: string
+          notes?: string | null
+          priority: string
+          start_date: string
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_name?: string
+          created_at?: string
+          current_stage?: string
+          expected_completion_date?: string | null
+          id?: string
+          job_requirement_id?: string
+          notes?: string | null
+          priority?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_flows_job_requirement_id_fkey"
+            columns: ["job_requirement_id"]
+            isOneToOne: false
+            referencedRelation: "job_requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          availability: string
+          contact: string
+          created_at: string
+          experience: number | null
+          hourly_rate: number | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          resume_url: string | null
+          tech_stack: Json
+          type: string
+        }
+        Insert: {
+          availability: string
+          contact: string
+          created_at?: string
+          experience?: number | null
+          hourly_rate?: number | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          resume_url?: string | null
+          tech_stack?: Json
+          type: string
+        }
+        Update: {
+          availability?: string
+          contact?: string
+          created_at?: string
+          experience?: number | null
+          hourly_rate?: number | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          resume_url?: string | null
+          tech_stack?: Json
+          type?: string
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          company: string
+          created_at: string
+          id: string
+          industry: string | null
+          name: string
+          notes: string | null
+          status: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          id?: string
+          industry?: string | null
+          name: string
+          notes?: string | null
+          status: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          id?: string
+          industry?: string | null
+          name?: string
+          notes?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
