@@ -32,7 +32,8 @@ export const useCreateResource = () => {
 
   return useMutation({
     mutationFn: async (resourceData: ResourceFormData) => {
-      const { resumeFile, ...data } = resourceData;
+      // Fix: Extract resumeFile separately since it doesn't exist on the interface
+      const { resumeFile, ...data } = resourceData as ResourceFormData & { resumeFile?: File };
       
       let resumeUrl = null;
       
@@ -89,9 +90,10 @@ export const useUpdateResource = () => {
 
   return useMutation({
     mutationFn: async ({ resourceId, resourceData }: { resourceId: string; resourceData: ResourceFormData }) => {
-      const { resumeFile, ...data } = resourceData;
+      // Fix: Extract resumeFile separately since it doesn't exist on the interface
+      const { resumeFile, ...data } = resourceData as ResourceFormData & { resumeFile?: File };
       
-      let resumeUrl = data.resumeFile || null;
+      let resumeUrl = (data as any).resumeFile || null;
       
       // Upload new resume file if provided
       if (resumeFile) {

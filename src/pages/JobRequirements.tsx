@@ -105,7 +105,6 @@ const JobRequirementsPage = () => {
           <JobRequirementTable
             jobRequirements={filteredJobs}
             onEdit={handleEditJob}
-            onView={handleEditJob}
             onDelete={handleDeleteJob}
           />
         </div>

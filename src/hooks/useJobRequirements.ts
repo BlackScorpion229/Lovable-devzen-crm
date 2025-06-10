@@ -45,7 +45,23 @@ export const useCreateJobRequirement = () => {
         .from('job_requirements')
         .select('job_id');
 
-      const jobId = generateJobId(jobData.title, existingJobs?.map(j => ({ jobId: j.job_id })) || []);
+      // Fix: Create proper JobRequirement objects for generateJobId
+      const existingJobObjects = existingJobs?.map(j => ({ 
+        jobId: j.job_id,
+        id: '',
+        title: '',
+        client: '',
+        description: '',
+        techStack: [],
+        experience: 0,
+        location: '',
+        status: 'Active' as const,
+        priority: 'Medium' as const,
+        createdAt: '',
+        updatedAt: ''
+      })) || [];
+
+      const jobId = generateJobId(jobData.title, existingJobObjects);
 
       const { data: job, error } = await supabase
         .from('job_requirements')
