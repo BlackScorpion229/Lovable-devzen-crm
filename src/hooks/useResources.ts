@@ -19,9 +19,9 @@ export const useResources = () => {
         ...resource,
         createdAt: resource.created_at,
         resumeFile: resource.resume_url,
-        techStack: Array.isArray(resource.tech_stack) ? resource.tech_stack : [],
+        techStack: Array.isArray(resource.tech_stack) ? resource.tech_stack as string[] : [],
         hourlyRate: resource.hourly_rate,
-      }));
+      } as Resource));
     },
   });
 };

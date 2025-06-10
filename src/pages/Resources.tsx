@@ -7,11 +7,13 @@ import { Plus, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Resource } from '@/types/resource';
-import { useResources, useDeleteResource } from '@/hooks/useResources';
+import { useResources, useDeleteResource, useCreateResource, useUpdateResource } from '@/hooks/useResources';
 
 const ResourcesPage = () => {
   const { data: resources = [], isLoading } = useResources();
   const deleteResourceMutation = useDeleteResource();
+  const createResourceMutation = useCreateResource();
+  const updateResourceMutation = useUpdateResource();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
@@ -36,6 +38,18 @@ const ResourcesPage = () => {
 
   const handleDeleteResource = (resourceId: string) => {
     deleteResourceMutation.mutate(resourceId);
+  };
+
+  const handleSaveResource = (resourceData: any) => {
+    if (editingResource) {
+      updateResourceMutation.mutate({
+        resourceId: editingResource.id,
+        resourceData
+      });
+    } else {
+      createResourceMutation.mutate(resourceData);
+    }
+    setIsDialogOpen(false);
   };
 
   if (isLoading) {
@@ -98,6 +112,7 @@ const ResourcesPage = () => {
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
           resource={editingResource}
+          onSave={handleSaveResource}
         />
       </main>
     </div>

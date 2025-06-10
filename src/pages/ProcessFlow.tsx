@@ -7,11 +7,13 @@ import { Plus, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ProcessFlowItem } from '@/types/processFlow';
-import { useProcessFlows, useDeleteProcessFlow } from '@/hooks/useProcessFlows';
+import { useProcessFlows, useDeleteProcessFlow, useCreateProcessFlow, useUpdateProcessFlow } from '@/hooks/useProcessFlows';
 
 const ProcessFlowPage = () => {
   const { data: processFlows = [], isLoading } = useProcessFlows();
   const deleteProcessFlowMutation = useDeleteProcessFlow();
+  const createProcessFlowMutation = useCreateProcessFlow();
+  const updateProcessFlowMutation = useUpdateProcessFlow();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProcessFlow, setEditingProcessFlow] = useState<ProcessFlowItem | null>(null);
@@ -36,6 +38,18 @@ const ProcessFlowPage = () => {
 
   const handleDeleteProcessFlow = (flowId: string) => {
     deleteProcessFlowMutation.mutate(flowId);
+  };
+
+  const handleSaveProcessFlow = (flowData: any) => {
+    if (editingProcessFlow) {
+      updateProcessFlowMutation.mutate({
+        flowId: editingProcessFlow.id,
+        flowData
+      });
+    } else {
+      createProcessFlowMutation.mutate(flowData);
+    }
+    setIsDialogOpen(false);
   };
 
   if (isLoading) {
@@ -99,6 +113,7 @@ const ProcessFlowPage = () => {
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
           processFlow={editingProcessFlow}
+          onSave={handleSaveProcessFlow}
         />
       </main>
     </div>

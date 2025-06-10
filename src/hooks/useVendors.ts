@@ -20,8 +20,12 @@ export const useVendors = () => {
 
       return vendors.map(vendor => ({
         ...vendor,
-        contacts: vendor.contacts || []
-      }));
+        createdAt: vendor.created_at,
+        contacts: vendor.contacts?.map(contact => ({
+          ...contact,
+          isPrimary: contact.is_primary
+        })) || []
+      } as Vendor));
     },
   });
 };
@@ -46,6 +50,7 @@ export const useCreateVendor = () => {
         const contactsToInsert = contacts.map(contact => ({
           ...contact,
           vendor_id: vendor.id,
+          is_primary: contact.isPrimary,
         }));
 
         const { error: contactsError } = await supabase
@@ -98,6 +103,7 @@ export const useUpdateVendor = () => {
         const contactsToInsert = contacts.map(contact => ({
           ...contact,
           vendor_id: vendorId,
+          is_primary: contact.isPrimary,
         }));
 
         const { error: contactsError } = await supabase

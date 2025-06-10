@@ -7,11 +7,13 @@ import { Plus, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Vendor } from '@/types/vendor';
-import { useVendors, useDeleteVendor } from '@/hooks/useVendors';
+import { useVendors, useDeleteVendor, useCreateVendor, useUpdateVendor } from '@/hooks/useVendors';
 
 const VendorsPage = () => {
   const { data: vendors = [], isLoading } = useVendors();
   const deleteVendorMutation = useDeleteVendor();
+  const createVendorMutation = useCreateVendor();
+  const updateVendorMutation = useUpdateVendor();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
@@ -39,6 +41,24 @@ const VendorsPage = () => {
 
   const handleDeleteVendor = (vendorId: string) => {
     deleteVendorMutation.mutate(vendorId);
+  };
+
+  const handleSaveVendor = (vendor: Vendor) => {
+    const { contacts, ...vendorData } = vendor;
+    
+    if (editingVendor) {
+      updateVendorMutation.mutate({
+        vendorId: editingVendor.id,
+        vendorData,
+        contacts: contacts.map(contact => ({ ...contact, isPrimary: contact.isPrimary }))
+      });
+    } else {
+      createVendorMutation.mutate({
+        vendorData,
+        contacts: contacts.map(contact => ({ ...contact, isPrimary: contact.isPrimary }))
+      });
+    }
+    setIsDialogOpen(false);
   };
 
   if (isLoading) {
@@ -98,9 +118,10 @@ const VendorsPage = () => {
         </div>
 
         <VendorDialog
-          isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
           vendor={editingVendor}
+          onSave={handleSaveVendor}
         />
       </main>
     </div>

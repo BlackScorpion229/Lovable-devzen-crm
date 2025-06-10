@@ -7,11 +7,13 @@ import { Plus, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { JobRequirement } from '@/types/jobRequirement';
-import { useJobRequirements, useDeleteJobRequirement } from '@/hooks/useJobRequirements';
+import { useJobRequirements, useDeleteJobRequirement, useCreateJobRequirement, useUpdateJobRequirement } from '@/hooks/useJobRequirements';
 
 const JobRequirementsPage = () => {
   const { data: jobRequirements = [], isLoading } = useJobRequirements();
   const deleteJobMutation = useDeleteJobRequirement();
+  const createJobMutation = useCreateJobRequirement();
+  const updateJobMutation = useUpdateJobRequirement();
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobRequirement | null>(null);
@@ -37,6 +39,18 @@ const JobRequirementsPage = () => {
 
   const handleDeleteJob = (jobId: string) => {
     deleteJobMutation.mutate(jobId);
+  };
+
+  const handleSaveJob = (jobData: any) => {
+    if (editingJob) {
+      updateJobMutation.mutate({
+        jobId: editingJob.id,
+        jobData
+      });
+    } else {
+      createJobMutation.mutate(jobData);
+    }
+    setIsDialogOpen(false);
   };
 
   if (isLoading) {
@@ -100,6 +114,7 @@ const JobRequirementsPage = () => {
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}
           jobRequirement={editingJob}
+          onSave={handleSaveJob}
         />
       </main>
     </div>

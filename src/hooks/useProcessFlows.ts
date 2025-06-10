@@ -27,6 +27,8 @@ export const useProcessFlows = () => {
         currentStage: flow.current_stage,
         startDate: flow.start_date,
         expectedCompletionDate: flow.expected_completion_date,
+        status: flow.status as 'Active' | 'Completed' | 'OnHold' | 'Cancelled',
+        priority: flow.priority as 'Low' | 'Medium' | 'High' | 'Urgent',
         history: flow.process_flow_history?.map(h => ({
           ...h,
           stageId: h.stage_id,
@@ -35,7 +37,7 @@ export const useProcessFlows = () => {
           completedDate: h.completed_date,
           updatedBy: h.updated_by,
         })) || [],
-      }));
+      } as ProcessFlowItem));
     },
   });
 };

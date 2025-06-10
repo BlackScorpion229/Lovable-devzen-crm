@@ -18,8 +18,8 @@ export const useJobRequirements = () => {
       return data.map(job => ({
         ...job,
         jobId: job.job_id,
-        techStack: Array.isArray(job.tech_stack) ? job.tech_stack : [],
-        assignedResources: Array.isArray(job.assigned_resources) ? job.assigned_resources : [],
+        techStack: Array.isArray(job.tech_stack) ? job.tech_stack as string[] : [],
+        assignedResources: Array.isArray(job.assigned_resources) ? job.assigned_resources as string[] : [],
         createdAt: job.created_at,
         updatedAt: job.updated_at,
         salary: job.salary_min && job.salary_max ? {
@@ -29,7 +29,7 @@ export const useJobRequirements = () => {
         } : undefined,
         startDate: job.start_date,
         endDate: job.end_date,
-      }));
+      } as JobRequirement));
     },
   });
 };
