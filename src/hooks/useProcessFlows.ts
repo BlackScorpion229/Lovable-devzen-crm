@@ -1,7 +1,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ProcessFlowItem } from '@/types/processFlow';
+import { ProcessFlowItem, ProcessFlowFormData } from '@/types/processFlow';
 import { useToast } from '@/hooks/use-toast';
 
 export const useProcessFlows = () => {
@@ -12,7 +12,7 @@ export const useProcessFlows = () => {
         .from('process_flows')
         .select(`
           *,
-          job_requirements!inner(job_id, title),
+          job_requirements(title),
           process_flow_history(*)
         `)
         .order('created_at', { ascending: false });
@@ -20,24 +20,29 @@ export const useProcessFlows = () => {
       if (error) throw error;
 
       return data.map(flow => ({
-        ...flow,
-        jobRequirementId: flow.job_requirements.job_id,
-        jobTitle: flow.job_requirements.title,
+        id: flow.id,
+        jobRequirementId: flow.job_requirement_id,
+        jobTitle: (flow.job_requirements as any)?.title || 'Unknown Job',
         candidateName: flow.candidate_name,
         currentStage: flow.current_stage,
+        status: flow.status as 'Active' | 'OnHold' | 'Completed' | 'Cancelled',
+        priority: flow.priority,
         startDate: flow.start_date,
         expectedCompletionDate: flow.expected_completion_date,
-        status: flow.status as 'Active' | 'Completed' | 'OnHold' | 'Cancelled',
-        priority: flow.priority as 'Low' | 'Medium' | 'High' | 'Urgent',
-        history: flow.process_flow_history?.map(h => ({
-          ...h,
+        notes: flow.notes,
+        createdAt: flow.created_at,
+        updatedAt: flow.updated_at,
+        history: (flow.process_flow_history as any[])?.map(h => ({
+          id: h.id,
           stageId: h.stage_id,
           stageName: h.stage_name,
           enteredDate: h.entered_date,
           completedDate: h.completed_date,
+          duration: h.duration,
+          notes: h.notes,
           updatedBy: h.updated_by,
-        })) || [],
-      } as ProcessFlowItem));
+        })) || []
+      }));
     },
   });
 };
@@ -47,26 +52,17 @@ export const useCreateProcessFlow = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (flowData: Omit<ProcessFlowItem, 'id' | 'history'>) => {
-      // First get the job requirement by job_id
-      const { data: jobReq, error: jobError } = await supabase
-        .from('job_requirements')
-        .select('id')
-        .eq('job_id', flowData.jobRequirementId)
-        .single();
-
-      if (jobError || !jobReq) throw new Error('Job requirement not found');
-
+    mutationFn: async (flowData: ProcessFlowFormData) => {
       const { data: flow, error } = await supabase
         .from('process_flows')
         .insert([{
-          job_requirement_id: jobReq.id,
+          job_requirement_id: flowData.jobRequirementId,
           candidate_name: flowData.candidateName,
           current_stage: flowData.currentStage,
-          start_date: flowData.startDate,
-          expected_completion_date: flowData.expectedCompletionDate,
           status: flowData.status,
           priority: flowData.priority,
+          start_date: flowData.startDate,
+          expected_completion_date: flowData.expectedCompletionDate,
           notes: flowData.notes,
         }])
         .select()
@@ -97,16 +93,17 @@ export const useUpdateProcessFlow = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ flowId, flowData }: { flowId: string; flowData: Omit<ProcessFlowItem, 'id' | 'history'> }) => {
+    mutationFn: async ({ flowId, flowData }: { flowId: string; flowData: ProcessFlowFormData }) => {
       const { error } = await supabase
         .from('process_flows')
         .update({
+          job_requirement_id: flowData.jobRequirementId,
           candidate_name: flowData.candidateName,
           current_stage: flowData.currentStage,
-          start_date: flowData.startDate,
-          expected_completion_date: flowData.expectedCompletionDate,
           status: flowData.status,
           priority: flowData.priority,
+          start_date: flowData.startDate,
+          expected_completion_date: flowData.expectedCompletionDate,
           notes: flowData.notes,
           updated_at: new Date().toISOString(),
         })

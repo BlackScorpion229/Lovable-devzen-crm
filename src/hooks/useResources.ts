@@ -56,7 +56,13 @@ export const useCreateResource = () => {
       const { data: resource, error } = await supabase
         .from('resources')
         .insert([{
-          ...data,
+          name: data.name,
+          contact: data.contact,
+          phone: data.phone,
+          experience: data.experience,
+          availability: data.availability,
+          notes: data.notes,
+          type: data.type,
           tech_stack: data.techStack,
           hourly_rate: data.hourlyRate,
           resume_url: resumeUrl,
@@ -114,7 +120,13 @@ export const useUpdateResource = () => {
       const { error } = await supabase
         .from('resources')
         .update({
-          ...data,
+          name: data.name,
+          contact: data.contact,
+          phone: data.phone,
+          experience: data.experience,
+          availability: data.availability,
+          notes: data.notes,
+          type: data.type,
           tech_stack: data.techStack,
           hourly_rate: data.hourlyRate,
           resume_url: resumeUrl,

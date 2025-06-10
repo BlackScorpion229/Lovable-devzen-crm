@@ -82,6 +82,8 @@ export const useCreateJobRequirement = () => {
           deadline: jobData.deadline,
           notes: jobData.notes,
           assigned_resources: jobData.assignedResources || [],
+          start_date: jobData.startDate,
+          end_date: jobData.endDate,
         }])
         .select()
         .single();
@@ -130,6 +132,8 @@ export const useUpdateJobRequirement = () => {
           deadline: jobData.deadline,
           notes: jobData.notes,
           assigned_resources: jobData.assignedResources || [],
+          start_date: jobData.startDate,
+          end_date: jobData.endDate,
           updated_at: new Date().toISOString(),
         })
         .eq('id', jobId);

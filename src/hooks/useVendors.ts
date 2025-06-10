@@ -1,30 +1,27 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Vendor, Contact, VendorFormData, ContactFormData } from '@/types/vendor';
+import { Vendor, VendorFormData } from '@/types/vendor';
 import { useToast } from '@/hooks/use-toast';
 
 export const useVendors = () => {
   return useQuery({
     queryKey: ['vendors'],
     queryFn: async () => {
-      const { data: vendors, error } = await supabase
+      const { data, error } = await supabase
         .from('vendors')
         .select(`
           *,
-          contacts (*)
+          contacts(*)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      return vendors.map(vendor => ({
+      return data.map(vendor => ({
         ...vendor,
         createdAt: vendor.created_at,
-        contacts: vendor.contacts?.map(contact => ({
-          ...contact,
-          isPrimary: contact.is_primary
-        })) || []
+        contacts: vendor.contacts as any[] || []
       } as Vendor));
     },
   });
@@ -35,27 +32,35 @@ export const useCreateVendor = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ vendorData, contacts }: { vendorData: VendorFormData; contacts: ContactFormData[] }) => {
-      // Create vendor first
+    mutationFn: async (vendorData: VendorFormData) => {
+      const { contacts, ...vendorInfo } = vendorData;
+
+      // Create the vendor first
       const { data: vendor, error: vendorError } = await supabase
         .from('vendors')
-        .insert([vendorData])
+        .insert([{
+          name: vendorInfo.name,
+          company: vendorInfo.company,
+          industry: vendorInfo.industry,
+          status: vendorInfo.status,
+          notes: vendorInfo.notes,
+        }])
         .select()
         .single();
 
       if (vendorError) throw vendorError;
 
       // Create contacts if any
-      if (contacts.length > 0) {
-        const contactsToInsert = contacts.map(contact => ({
-          ...contact,
-          vendor_id: vendor.id,
-          is_primary: contact.isPrimary,
-        }));
-
+      if (contacts && contacts.length > 0) {
         const { error: contactsError } = await supabase
           .from('contacts')
-          .insert(contactsToInsert);
+          .insert(
+            contacts.map(contact => ({
+              ...contact,
+              vendor_id: vendor.id,
+              is_primary: contact.isPrimary || false,
+            }))
+          );
 
         if (contactsError) throw contactsError;
       }
@@ -84,11 +89,19 @@ export const useUpdateVendor = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ vendorId, vendorData, contacts }: { vendorId: string; vendorData: VendorFormData; contacts: ContactFormData[] }) => {
-      // Update vendor
+    mutationFn: async ({ vendorId, vendorData }: { vendorId: string; vendorData: VendorFormData }) => {
+      const { contacts, ...vendorInfo } = vendorData;
+
+      // Update the vendor
       const { error: vendorError } = await supabase
         .from('vendors')
-        .update(vendorData)
+        .update({
+          name: vendorInfo.name,
+          company: vendorInfo.company,
+          industry: vendorInfo.industry,
+          status: vendorInfo.status,
+          notes: vendorInfo.notes,
+        })
         .eq('id', vendorId);
 
       if (vendorError) throw vendorError;
@@ -99,16 +112,19 @@ export const useUpdateVendor = () => {
         .delete()
         .eq('vendor_id', vendorId);
 
-      if (contacts.length > 0) {
-        const contactsToInsert = contacts.map(contact => ({
-          ...contact,
-          vendor_id: vendorId,
-          is_primary: contact.isPrimary,
-        }));
-
+      if (contacts && contacts.length > 0) {
         const { error: contactsError } = await supabase
           .from('contacts')
-          .insert(contactsToInsert);
+          .insert(
+            contacts.map(contact => ({
+              name: contact.name,
+              email: contact.email,
+              phone: contact.phone,
+              position: contact.position,
+              vendor_id: vendorId,
+              is_primary: contact.isPrimary || false,
+            }))
+          );
 
         if (contactsError) throw contactsError;
       }
@@ -136,6 +152,13 @@ export const useDeleteVendor = () => {
 
   return useMutation({
     mutationFn: async (vendorId: string) => {
+      // Delete contacts first due to foreign key constraint
+      await supabase
+        .from('contacts')
+        .delete()
+        .eq('vendor_id', vendorId);
+
+      // Then delete the vendor
       const { error } = await supabase
         .from('vendors')
         .delete()
