@@ -8,7 +8,10 @@ import VendorDialog from '@/components/vendor/VendorDialog';
 import ResourceDialog from '@/components/resource/ResourceDialog';
 import JobRequirementDialog from '@/components/jobRequirement/JobRequirementDialog';
 import ProcessFlowDialog from '@/components/processFlow/ProcessFlowDialog';
-import { useCreateVendor, useCreateResource, useCreateJobRequirement, useCreateProcessFlow } from '@/hooks/useVendors';
+import { useCreateVendor } from '@/hooks/useVendors';
+import { useCreateResource } from '@/hooks/useResources';
+import { useCreateJobRequirement } from '@/hooks/useJobRequirements';
+import { useCreateProcessFlow } from '@/hooks/useProcessFlows';
 
 interface NavbarProps {
   title: string;
@@ -48,38 +51,26 @@ const Navbar: React.FC<NavbarProps> = ({ title, subtitle }) => {
   };
 
   const getActionButtons = () => {
-    switch (location.pathname) {
-      case '/vendors':
-        return (
-          <Button onClick={() => setVendorDialogOpen(true)} className="flex items-center gap-2 shadow-lg">
-            <Plus className="w-4 h-4" />
-            Add Vendor
-          </Button>
-        );
-      case '/resources':
-        return (
-          <Button onClick={() => setResourceDialogOpen(true)} className="flex items-center gap-2 shadow-lg">
-            <Plus className="w-4 h-4" />
-            Add Resource
-          </Button>
-        );
-      case '/job-requirements':
-        return (
-          <Button onClick={() => setJobRequirementDialogOpen(true)} className="flex items-center gap-2 shadow-lg">
-            <Plus className="w-4 h-4" />
-            Add Job Requirement
-          </Button>
-        );
-      case '/process-flow':
-        return (
-          <Button onClick={() => setProcessFlowDialogOpen(true)} className="flex items-center gap-2 shadow-lg">
-            <Plus className="w-4 h-4" />
-            Add Process Flow
-          </Button>
-        );
-      default:
-        return null;
-    }
+    return (
+      <div className="flex items-center gap-2">
+        <Button onClick={() => setVendorDialogOpen(true)} className="flex items-center gap-2 shadow-lg">
+          <Plus className="w-4 h-4" />
+          Add Vendor
+        </Button>
+        <Button onClick={() => setResourceDialogOpen(true)} className="flex items-center gap-2 shadow-lg">
+          <Plus className="w-4 h-4" />
+          Add Resource
+        </Button>
+        <Button onClick={() => setJobRequirementDialogOpen(true)} className="flex items-center gap-2 shadow-lg">
+          <Plus className="w-4 h-4" />
+          Add Job Requirement
+        </Button>
+        <Button onClick={() => setProcessFlowDialogOpen(true)} className="flex items-center gap-2 shadow-lg">
+          <Plus className="w-4 h-4" />
+          Add Process Flow
+        </Button>
+      </div>
+    );
   };
 
   return (
