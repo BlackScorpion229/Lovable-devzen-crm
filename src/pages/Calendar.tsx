@@ -4,16 +4,16 @@ import Navbar from '@/components/layout/Navbar';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { CalendarIcon, Clock, Users, Plus } from 'lucide-react';
+import { CalendarIcon, Clock, Users } from 'lucide-react';
 
 const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   // Mock data for activities
-  const todayActivities = [
+  const allActivities = [
     {
       id: '1',
+      date: new Date(),
       time: '09:00 AM',
       title: 'Technical Interview - Senior Data Scientist',
       client: 'ABC Corp',
@@ -22,6 +22,7 @@ const CalendarPage = () => {
     },
     {
       id: '2',
+      date: new Date(),
       time: '02:00 PM',
       title: 'Client Meeting - Project Kickoff',
       client: 'XYZ Ltd',
@@ -30,40 +31,94 @@ const CalendarPage = () => {
     },
     {
       id: '3',
+      date: new Date(),
       time: '04:30 PM',
       title: 'Candidate Screening Call',
       client: 'TechFlow',
       type: 'Screening',
       priority: 'Low'
-    }
-  ];
-
-  const upcomingActivities = [
+    },
     {
       id: '4',
-      date: 'Tomorrow',
+      date: new Date(Date.now() + 86400000), // Tomorrow
       time: '10:00 AM',
       title: 'Final Interview - DevOps Engineer',
       client: 'InnovateTech',
-      type: 'Interview'
+      type: 'Interview',
+      priority: 'High'
     },
     {
       id: '5',
-      date: 'Dec 12',
+      date: new Date(Date.now() + 172800000), // Day after tomorrow
       time: '11:30 AM',
       title: 'Contract Review Meeting',
       client: 'DataFlow Corp',
-      type: 'Meeting'
+      type: 'Meeting',
+      priority: 'Medium'
     },
     {
       id: '6',
-      date: 'Dec 15',
+      date: new Date(Date.now() + 259200000), // 3 days from now
       time: '03:00 PM',
       title: 'Quarterly Business Review',
       client: 'Multiple Clients',
-      type: 'Review'
+      type: 'Review',
+      priority: 'Low'
+    },
+    {
+      id: '7',
+      date: new Date(Date.now() + 345600000), // 4 days from now
+      time: '01:00 PM',
+      title: 'Team Sync Meeting',
+      client: 'Internal',
+      type: 'Meeting',
+      priority: 'Medium'
+    },
+    {
+      id: '8',
+      date: new Date(Date.now() + 432000000), // 5 days from now
+      time: '09:30 AM',
+      title: 'New Client Onboarding',
+      client: 'StartupTech',
+      type: 'Meeting',
+      priority: 'High'
     }
   ];
+
+  // Get activities for selected date
+  const getSelectedDateActivities = () => {
+    if (!selectedDate) return [];
+    
+    const selectedDateStr = selectedDate.toDateString();
+    return allActivities.filter(activity => 
+      activity.date.toDateString() === selectedDateStr
+    );
+  };
+
+  // Get next 5 days activities
+  const getNext5DaysActivities = () => {
+    const today = new Date();
+    const next5Days = [];
+    
+    for (let i = 1; i <= 5; i++) {
+      const date = new Date(today.getTime() + (i * 86400000));
+      const dayActivities = allActivities.filter(activity => 
+        activity.date.toDateString() === date.toDateString()
+      );
+      
+      if (dayActivities.length > 0) {
+        next5Days.push(...dayActivities.map(activity => ({
+          ...activity,
+          dateLabel: i === 1 ? 'Tomorrow' : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        })));
+      }
+    }
+    
+    return next5Days;
+  };
+
+  const selectedDateActivities = getSelectedDateActivities();
+  const upcomingActivities = getNext5DaysActivities();
 
   const getActivityColor = (type: string) => {
     switch (type) {
@@ -93,6 +148,24 @@ const CalendarPage = () => {
     }
   };
 
+  const getSelectedDateLabel = () => {
+    if (!selectedDate) return 'No Date Selected';
+    
+    const today = new Date();
+    const selectedDateStr = selectedDate.toDateString();
+    const todayStr = today.toDateString();
+    
+    if (selectedDateStr === todayStr) {
+      return "Today's Activities";
+    }
+    
+    return `Activities for ${selectedDate.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      month: 'long', 
+      day: 'numeric' 
+    })}`;
+  };
+
   return (
     <div className="flex-1 flex flex-col">
       <Navbar 
@@ -104,15 +177,11 @@ const CalendarPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendar Widget */}
           <Card className="glass-card">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CalendarIcon className="w-5 h-5" />
                 Calendar
               </CardTitle>
-              <Button size="sm" className="shadow-md">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Event
-              </Button>
             </CardHeader>
             <CardContent>
               <Calendar
@@ -124,48 +193,62 @@ const CalendarPage = () => {
             </CardContent>
           </Card>
 
-          {/* Today's Activities */}
+          {/* Selected Date Activities */}
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                Today's Activities
+                {getSelectedDateLabel()}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {todayActivities.map((activity) => (
-                <div key={activity.id} className="p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-primary">{activity.time}</span>
-                    <Badge className={getPriorityColor(activity.priority)}>{activity.priority}</Badge>
+              {selectedDateActivities.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">
+                  No activities scheduled for this date
+                </p>
+              ) : (
+                selectedDateActivities.map((activity) => (
+                  <div key={activity.id} className="p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-sm font-medium text-primary">{activity.time}</span>
+                      <Badge className={getPriorityColor(activity.priority)}>{activity.priority}</Badge>
+                    </div>
+                    <h4 className="font-semibold text-sm mb-1">{activity.title}</h4>
+                    <p className="text-xs text-muted-foreground mb-2">{activity.client}</p>
+                    <Badge className={getActivityColor(activity.type)}>{activity.type}</Badge>
                   </div>
-                  <h4 className="font-semibold text-sm mb-1">{activity.title}</h4>
-                  <p className="text-xs text-muted-foreground mb-2">{activity.client}</p>
-                  <Badge className={getActivityColor(activity.type)}>{activity.type}</Badge>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
 
-          {/* Upcoming Activities */}
+          {/* Next 5 Days Activities */}
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                Upcoming Activities
+                Next 5 Days Activities
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {upcomingActivities.map((activity) => (
-                <div key={activity.id} className="p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-primary">{activity.date} - {activity.time}</span>
-                    <Badge className={getActivityColor(activity.type)}>{activity.type}</Badge>
+              {upcomingActivities.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">
+                  No upcoming activities in the next 5 days
+                </p>
+              ) : (
+                upcomingActivities.map((activity) => (
+                  <div key={activity.id} className="p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-sm font-medium text-primary">
+                        {activity.dateLabel} - {activity.time}
+                      </span>
+                      <Badge className={getActivityColor(activity.type)}>{activity.type}</Badge>
+                    </div>
+                    <h4 className="font-semibold text-sm mb-1">{activity.title}</h4>
+                    <p className="text-xs text-muted-foreground">{activity.client}</p>
                   </div>
-                  <h4 className="font-semibold text-sm mb-1">{activity.title}</h4>
-                  <p className="text-xs text-muted-foreground">{activity.client}</p>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
         </div>

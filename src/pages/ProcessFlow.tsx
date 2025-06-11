@@ -2,21 +2,16 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import ProcessFlowTable from '@/components/processFlow/ProcessFlowTable';
-import ProcessFlowDialog from '@/components/processFlow/ProcessFlowDialog';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ProcessFlowItem } from '@/types/processFlow';
-import { useProcessFlows, useDeleteProcessFlow, useCreateProcessFlow, useUpdateProcessFlow } from '@/hooks/useProcessFlows';
+import { useProcessFlows, useDeleteProcessFlow } from '@/hooks/useProcessFlows';
 
 const ProcessFlowPage = () => {
   const { data: processFlows = [], isLoading } = useProcessFlows();
   const deleteProcessFlowMutation = useDeleteProcessFlow();
-  const createProcessFlowMutation = useCreateProcessFlow();
-  const updateProcessFlowMutation = useUpdateProcessFlow();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingProcessFlow, setEditingProcessFlow] = useState<ProcessFlowItem | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredProcessFlows = processFlows.filter(flow =>
@@ -26,30 +21,8 @@ const ProcessFlowPage = () => {
     flow.currentStage.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddProcessFlow = () => {
-    setEditingProcessFlow(null);
-    setIsDialogOpen(true);
-  };
-
-  const handleEditProcessFlow = (processFlow: ProcessFlowItem) => {
-    setEditingProcessFlow(processFlow);
-    setIsDialogOpen(true);
-  };
-
   const handleDeleteProcessFlow = (flowId: string) => {
     deleteProcessFlowMutation.mutate(flowId);
-  };
-
-  const handleSaveProcessFlow = (flowData: any) => {
-    if (editingProcessFlow) {
-      updateProcessFlowMutation.mutate({
-        flowId: editingProcessFlow.id,
-        flowData
-      });
-    } else {
-      createProcessFlowMutation.mutate(flowData);
-    }
-    setIsDialogOpen(false);
   };
 
   if (isLoading) {
@@ -74,12 +47,8 @@ const ProcessFlowPage = () => {
       />
       
       <main className="flex-1 px-6 py-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="mb-6">
           <p className="text-muted-foreground">Monitor recruitment stages and progress</p>
-          <Button onClick={handleAddProcessFlow} className="flex items-center gap-2 shadow-lg">
-            <Plus className="w-4 h-4" />
-            Add Process Flow
-          </Button>
         </div>
 
         <div className="mb-6">
@@ -103,18 +72,11 @@ const ProcessFlowPage = () => {
         <div className="glass-card rounded-lg border">
           <ProcessFlowTable
             processFlows={filteredProcessFlows}
-            onEdit={handleEditProcessFlow}
-            onView={handleEditProcessFlow}
+            onEdit={() => {}} // Will be handled by navbar
+            onView={() => {}} // Will be handled by navbar
             onDelete={handleDeleteProcessFlow}
           />
         </div>
-
-        <ProcessFlowDialog
-          isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-          processFlow={editingProcessFlow}
-          onSave={handleSaveProcessFlow}
-        />
       </main>
     </div>
   );
